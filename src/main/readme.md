@@ -25,3 +25,6 @@ Threads gestion :
 * Un thread est créé à chaque nouvelle connexion 
 * Chaque client possède un thread pour ecrire les messages et un thread pour les afficher 
 
+Comment garantir l'utilisation d'un pseudo unique? 
+* While tant que le pseudo n'est pas valide on boucle
+* Création d'une fonction de choix de pseudo => fonction rappelée à chaque pb 
