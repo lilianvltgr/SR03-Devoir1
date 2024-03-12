@@ -10,7 +10,8 @@ Fonctions :
 * Une fonction qui permet de choisir le pseudo 
 * Une fonction de diffusion à tous (à chaque fois que le serveur reçoit un message)
   * Une fonction qui gère l'affichage 
-
+* Ajout d'une personne dans le tableau
+* Suppression d'une personne dans le tableau
 Lorsqu'un client envoie un message au server : Contenu + Pseudo 
 
 
