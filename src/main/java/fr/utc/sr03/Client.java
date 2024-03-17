@@ -26,8 +26,11 @@ public class Client {
         output.writeUTF(pseudo);
         System.out.println("Vous êtes connectés");
 
-        //Ecoute (avec un thread?) + affichage des messages (avec un autre thread?)
+        //new message sender thread
         ClientMessageSender threadMessageSender = new ClientMessageSender(communication, pseudo);
         threadMessageSender.start();
+        //new message receptor thread
+        ClientMessageReceptor threadMessageReceptor = new ClientMessageReceptor(communication);
+        threadMessageReceptor.start();
     }
 }
