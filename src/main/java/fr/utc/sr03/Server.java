@@ -34,9 +34,14 @@ public class Server {
         pseudosConnectes[nbPseudosConnectes] = pseudo;
         nbPseudosConnectes++;
     }
-    private static void addToHashtable(String pseudo, DataOutputStream outputClient){
+    public static void addToHashtable(String pseudo, DataOutputStream outputClient){
         hashtable.put(pseudo, outputClient);
         nbPseudosConnectes++;
+    }
+
+    public static void removeFromHashtable(String pseudo, DataOutputStream outputClient){
+        hashtable.remove(pseudo, outputClient);
+        nbPseudosConnectes--;
     }
     protected static void sendMessagesToClients(String message, String messagePseudo) throws IOException {
         for(Map.Entry<String, DataOutputStream> entry : hashtable.entrySet()) {
@@ -53,6 +58,15 @@ public class Server {
         }
     }
     protected static void sendArrivalMessageToClients(String message, String newPseudo) throws IOException {
+        for(Map.Entry<String, DataOutputStream> entry : hashtable.entrySet()) {
+            String pseudo = entry.getKey(); // récupère clé table hashage
+            DataOutputStream output = entry.getValue(); // prend valeur sortie
+            System.out.println("pseudo de la hashtable : " + pseudo); // affiche pseudo
+            output.writeUTF(newPseudo);
+            output.writeUTF(message);
+        }
+    }
+    protected static void sendDisconnectionMessageToClients(String message, String newPseudo) throws IOException {
         for(Map.Entry<String, DataOutputStream> entry : hashtable.entrySet()) {
             String pseudo = entry.getKey(); // récupère clé table hashage
             DataOutputStream output = entry.getValue(); // prend valeur sortie
@@ -81,7 +95,8 @@ public class Server {
             }
             if (isExisting(pseudo)){
                 //envoi d'un message d'erreur car le pseudo est déjà utilisé
-            } else {
+            }
+            else {
                 DataOutputStream output = new DataOutputStream(newClient.getOutputStream());
                 // add the pseudo to the array
                 addToPseudosConnectes(pseudo);

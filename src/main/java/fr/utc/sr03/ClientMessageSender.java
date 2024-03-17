@@ -32,6 +32,13 @@ public class ClientMessageSender extends Thread{
                     //lecture du message
                     String message = sc.nextLine();
                     //envoi du message au thread server
+                    if (message.equals("exit")) {
+                        // Code pour envoyer un message de déconnexion au serveur
+                        output.writeUTF("exit");
+                        // Fermeture de la connexion avec le serveur
+                        communication.close();
+                        break;
+                    }
                     output.writeUTF(pseudo);
                     output.writeUTF(message);
                 }

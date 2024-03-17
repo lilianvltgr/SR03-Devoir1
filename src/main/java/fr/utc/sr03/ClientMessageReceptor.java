@@ -12,6 +12,9 @@ import java.util.Scanner;
 public class ClientMessageReceptor extends Thread{
     private Socket communication;
 
+    public Socket getCommunication() {
+        return communication;
+    }
 
     //constructor
     public ClientMessageReceptor(Socket communication){
