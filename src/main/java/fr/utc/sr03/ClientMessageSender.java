@@ -6,6 +6,11 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 
+/**
+ * Classe héritant des caractéristiques des threads permettant
+ * au client d'écrire un message sur la console et de l'envoyer au serveur.
+ */
+
 public class ClientMessageSender extends Thread{
     private Socket communication;
     private String pseudo;
@@ -17,6 +22,7 @@ public class ClientMessageSender extends Thread{
     }
 
     @Override
+    // Fonction permettant de faire tourner le thread
     public void run(){
             try {
                 Scanner sc = new Scanner(System.in);
@@ -24,7 +30,7 @@ public class ClientMessageSender extends Thread{
 
                 while (true) {
                     //lecture du message
-                    String message = sc.next();
+                    String message = sc.nextLine();
                     //envoi du message au thread server
                     output.writeUTF(pseudo);
                     output.writeUTF(message);

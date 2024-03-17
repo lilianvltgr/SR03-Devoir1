@@ -5,6 +5,13 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.*;
 
+/**
+ * Classe Server qui exécute une boucle infinie pour accepter les demandes entrantes.
+ * Il stocke l'objet socket associé à cette connection dans un tableau clients et
+ * lance un thread qui lit le message envoyé à cet objet.
+ * Lorsqu'il reçoit une connexion,  message ou une deconnexion d'un des clients,
+ * il diffuse l'information à l'ensemble des clients.
+ */
 public class Server {
     static public ServerSocket connection;
     public static final int MAX_ELEM = 20;
@@ -31,7 +38,7 @@ public class Server {
         hashtable.put(pseudo, outputClient);
         nbPseudosConnectes++;
     }
-    protected static void sendMessagesToCLients(String message, String messagePseudo) throws IOException {
+    protected static void sendMessagesToClients(String message, String messagePseudo) throws IOException {
         for(Map.Entry<String, DataOutputStream> entry : hashtable.entrySet()) {
             String pseudo = entry.getKey();
             DataOutputStream output = entry.getValue();
@@ -41,7 +48,16 @@ public class Server {
                 // If the current client is the one who wrote the message we display "Moi" instead of the client pseudo
                 finalPseudo = "Moi";
             }
-            output.writeUTF(finalPseudo);
+            output.writeUTF(finalPseudo + ":");
+            output.writeUTF(message);
+        }
+    }
+    protected static void sendArrivalMessageToClients(String message, String newPseudo) throws IOException {
+        for(Map.Entry<String, DataOutputStream> entry : hashtable.entrySet()) {
+            String pseudo = entry.getKey(); // récupère clé table hashage
+            DataOutputStream output = entry.getValue(); // prend valeur sortie
+            System.out.println("pseudo de la hashtable : " + pseudo); // affiche pseudo
+            output.writeUTF(newPseudo);
             output.writeUTF(message);
         }
     }
@@ -56,12 +72,12 @@ public class Server {
             newClient = connection.accept();
             //lecture du pseudo et vérification qu'il n'est pas dans la liste des pseudos utilisés
             DataInputStream input = new DataInputStream(newClient.getInputStream());
-            String pseudo = input.readUTF(); // récupération du pseudo
+            String pseudo = input.readUTF();
 
             if (pseudo.equals("envoiMessage")){
                 String messagePseudo = input.readUTF();
                 String message = input.readUTF();
-                sendMessagesToCLients(message, messagePseudo);
+                sendMessagesToClients(message, messagePseudo);
             }
             if (isExisting(pseudo)){
                 //envoi d'un message d'erreur car le pseudo est déjà utilisé
@@ -71,6 +87,8 @@ public class Server {
                 addToPseudosConnectes(pseudo);
                 addToHashtable(pseudo, output);
                 System.out.println("Pseudo "+pseudo+" added to the array");
+                String messageArrive = "a rejoint la conversation. ";
+                sendArrivalMessageToClients(messageArrive, pseudo);
             }
             ServerMessageReceptor thread = new ServerMessageReceptor(newClient);
             thread.start();

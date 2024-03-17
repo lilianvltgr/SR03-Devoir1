@@ -6,6 +6,14 @@ import java.util.Scanner;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * classe Client permettant d'effectuer une connexion
+ * auprès du serveur et lancer les deux threads de communication
+ * ClientMessageReceptor pour intercepter les messages venant du serveur
+ * et ClientMessageSender permettant de récupérer les messages saisis
+ * par l’utilisateur et de les transmettre au serveur
+ */
+
 public class Client {
     static public Socket communication;
 
@@ -14,22 +22,31 @@ public class Client {
     }
 
     public static void main(String[] args) throws IOException {
-        Scanner sc = new Scanner(System.in);
-        communication = new Socket("localhost", 10080);
+        Scanner sc = new Scanner(System.in); // scanner pour entrée console
+
+        // Connexion serveur
+        communication = new Socket("localhost", 10080); // socket créée
         System.out.println("Connecté");
         System.out.println("Ecrivez votre pseudo");
-        String pseudo = sc.next();
-        DataInputStream input = new DataInputStream(communication.getInputStream());
-        DataOutputStream output = new DataOutputStream(communication.getOutputStream());
 
-        //Création du pseudo + connection au chat
-        output.writeUTF(pseudo);
+
+        // Instanciations des pipes
+        DataInputStream input = new DataInputStream(communication.getInputStream()); // pipe entrée texte
+        DataOutputStream output = new DataOutputStream(communication.getOutputStream()); // pipe sortie texte
+
+        // Création du pseudo + connection au chat
+        String pseudo;
+        while ((pseudo = sc.next()) == null) {
+            System.out.println("Ecrivez votre pseudo");
+        }
+        output.writeUTF(pseudo); // ecriture pipe sortie pseudo créé
         System.out.println("Vous êtes connectés");
 
-        //new message sender thread
+        //New message sender thread
         ClientMessageSender threadMessageSender = new ClientMessageSender(communication, pseudo);
         threadMessageSender.start();
-        //new message receptor thread
+
+        //New message receptor thread
         ClientMessageReceptor threadMessageReceptor = new ClientMessageReceptor(communication);
         threadMessageReceptor.start();
     }
