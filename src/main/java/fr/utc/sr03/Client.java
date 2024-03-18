@@ -6,6 +6,9 @@ import java.util.Scanner;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import static java.lang.Thread.currentThread;
+import static java.lang.Thread.sleep;
+
 /**
  * classe Client permettant d'effectuer une connexion
  * auprès du serveur et lancer les deux threads de communication
@@ -16,12 +19,13 @@ import java.io.OutputStream;
 
 public class Client {
     static public Socket communication;
+    static volatile boolean connectionActive = true;
 
     public Client(String host, int port) throws IOException {
         Socket communication = new Socket(host, port);
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         Scanner sc = new Scanner(System.in); // scanner pour entrée console
 
         // Connexion serveur
@@ -49,5 +53,11 @@ public class Client {
         //New message receptor thread
         ClientMessageReceptor threadMessageReceptor = new ClientMessageReceptor(communication);
         threadMessageReceptor.start();
+        while (connectionActive) {
+            //while the communication is active, the main programm waits
+        }
+        System.out.println("Déconnection en cours");
+        sleep(2000);
+        communication.close();
     }
 }

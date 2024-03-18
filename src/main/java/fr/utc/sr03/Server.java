@@ -14,40 +14,36 @@ import java.util.*;
  */
 public class Server {
     static public ServerSocket connection;
-    public static final int MAX_ELEM = 20;
     public static Socket newClient;
-    public static String[] pseudosConnectes;
-    public static int nbPseudosConnectes = 0;
-    public static HashMap<String, DataOutputStream> hashtable;
+    
+    public static int nbPseudosConnectes;
+    public static HashMap<String, DataOutputStream> connectedClients;
 
     private static boolean isExisting(String pseudo){
-        //return the existance of a pseudo in the array
+        //return the existance of a pseudo in the connectedClients
         if(nbPseudosConnectes == 0)
             return false;
-        for(String element : pseudosConnectes){
-            if (Objects.equals(element, pseudo))
+        for(Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()){
+            if (entry.getKey().equals(pseudo))
                 return true;
         }
         return false;
     }
-    private static void addToPseudosConnectes(String pseudo){
-        pseudosConnectes[nbPseudosConnectes] = pseudo;
-        nbPseudosConnectes++;
-    }
-    public static void addToHashtable(String pseudo, DataOutputStream outputClient){
-        hashtable.put(pseudo, outputClient);
+    
+    public static void addToconnectedClients(String pseudo, DataOutputStream outputClient){
+        connectedClients.put(pseudo, outputClient);
         nbPseudosConnectes++;
     }
 
-    public static void removeFromHashtable(String pseudo, DataOutputStream outputClient){
-        hashtable.remove(pseudo, outputClient);
+    public static void removeFromConnectedClients(String pseudo, DataOutputStream outputClient){
+        connectedClients.remove(pseudo, outputClient);
         nbPseudosConnectes--;
     }
     protected static void sendMessagesToClients(String message, String messagePseudo) throws IOException {
-        for(Map.Entry<String, DataOutputStream> entry : hashtable.entrySet()) {
+        for(Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
             String pseudo = entry.getKey();
             DataOutputStream output = entry.getValue();
-            System.out.println("pseudo de la hashtable : "+pseudo);
+            System.out.println("pseudo de la connectedClients : "+pseudo);
             String finalPseudo = messagePseudo;
             if (pseudo.equals(messagePseudo)){
                 // If the current client is the one who wrote the message we display "Moi" instead of the client pseudo
@@ -57,27 +53,27 @@ public class Server {
             output.writeUTF(message);
         }
     }
+    //TODO Résoudre le pb : lorsqu'un client se connecte il voit son message d'arrivée dans la conv et le "Vous êtes connectés"
     protected static void sendArrivalMessageToClients(String message, String newPseudo) throws IOException {
-        for(Map.Entry<String, DataOutputStream> entry : hashtable.entrySet()) {
+        for(Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
             String pseudo = entry.getKey(); // récupère clé table hashage
             DataOutputStream output = entry.getValue(); // prend valeur sortie
-            System.out.println("pseudo de la hashtable : " + pseudo); // affiche pseudo
+            System.out.println("pseudo de la connectedClients : " + pseudo); // affiche pseudo
             output.writeUTF(newPseudo);
             output.writeUTF(message);
         }
     }
     protected static void sendDisconnectionMessageToClients(String message, String newPseudo) throws IOException {
-        for(Map.Entry<String, DataOutputStream> entry : hashtable.entrySet()) {
+        for(Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
             String pseudo = entry.getKey(); // récupère clé table hashage
             DataOutputStream output = entry.getValue(); // prend valeur sortie
-            System.out.println("pseudo de la hashtable : " + pseudo); // affiche pseudo
+            System.out.println("pseudo de la connectedClients : " + pseudo); // affiche pseudo
             output.writeUTF(newPseudo);
             output.writeUTF(message);
         }
     }
     public static void main(String[] args) throws IOException {
-        hashtable = new HashMap<>();
-        pseudosConnectes = new String[MAX_ELEM];
+        connectedClients = new HashMap<>();
         nbPseudosConnectes = 0;
         connection = new ServerSocket(10080);
 
@@ -94,13 +90,12 @@ public class Server {
                 sendMessagesToClients(message, messagePseudo);
             }
             if (isExisting(pseudo)){
-                //envoi d'un message d'erreur car le pseudo est déjà utilisé
+                //TODO envoi d'un message d'erreur car le pseudo est déjà utilisé
             }
             else {
                 DataOutputStream output = new DataOutputStream(newClient.getOutputStream());
                 // add the pseudo to the array
-                addToPseudosConnectes(pseudo);
-                addToHashtable(pseudo, output);
+                addToconnectedClients(pseudo, output);
                 System.out.println("Pseudo "+pseudo+" added to the array");
                 String messageArrive = "a rejoint la conversation. ";
                 sendArrivalMessageToClients(messageArrive, pseudo);

@@ -11,43 +11,51 @@ import java.util.HashMap;
  * au client de recevoir un message envoyé par le serveur et
  * de l'afficher sur sa console personnelle.
  */
-public class ServerMessageReceptor extends Thread{
+public class ServerMessageReceptor extends Thread {
     private Socket client;
-    public ServerMessageReceptor(Socket client){this.client = client;}
+//TODO voir l'interet de mettre les attributs en final
+    public ServerMessageReceptor(Socket client) {
+        this.client = client;
+    }
 
     @Override
 
     // Fonction permettant de faire tourner le thread
-    public void run(){
-            try {
-                DataInputStream input = new DataInputStream(client.getInputStream());
-                DataOutputStream output = new DataOutputStream(client.getOutputStream());
-                while(true){
+    public void run() {
+        try {
+            DataInputStream input = new DataInputStream(client.getInputStream());
+            DataOutputStream output = new DataOutputStream(client.getOutputStream());
+            boolean connectionActive = true;
 
-                    String pseudo = input.readUTF(); // lit pseudo envoyé
-                    String message = input.readUTF(); // lit message associé
+            while (connectionActive) {
+                String pseudo = input.readUTF(); // lit pseudo envoyé
+                String message = input.readUTF(); // lit message associé
 
-                    //Si l'utilisateur veut quitter la conversation, il a entré exit dans la console
-                    if (message.equals("exit")){
-                        String tempPseudo = pseudo;
-                        // connection avec le client arrêtée
-                        client.close();
-                        // client supprimé de la table de hashage
-                        Server.removeFromHashtable(pseudo, output);
-                        // envoie message autres utilisateurs
-                        message = "a quitté la conversation.";
-                        Server.sendDisconnectionMessageToClients(message,tempPseudo);
-                    }else{
-                        // si c'est un autre message il s'affiche
-                        System.out.println("message : "+message); // affiche le message sur la console
-                        Server.sendMessagesToClients(message, pseudo); // envoie le message à la table des clients
-                    }
+                //Si l'utilisateur veut quitter la conversation, il a entré exit dans la console
+                if (message.equals("exit")) {
+                    // client supprimé de la table de hashage
+                    Server.removeFromConnectedClients(pseudo, output);
+                    // envoie message autres utilisateurs
+                    message = "a quitté la conversation.";
+                    Server.sendDisconnectionMessageToClients(message, pseudo);
+                    connectionActive = false;
+                    System.out.println("Connexion active  : " + connectionActive);
 
+                } else {
+                    // si c'est un autre message il s'affiche
+                    System.out.println("message : " + message); // affiche le message sur la console
+                    Server.sendMessagesToClients(message, pseudo); // envoie le message à la table des clients
                 }
+            }
+        } catch (IOException e) {
+            System.out.println("erreur"); // affiche le message sur la console
+            throw new RuntimeException(e);
+        }
+            try {
+                client.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                //we do nothing
             }
+        }
+    }
 
-            }
-
-}
