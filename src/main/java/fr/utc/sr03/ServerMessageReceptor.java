@@ -27,7 +27,7 @@ public class ServerMessageReceptor extends Thread {
             DataOutputStream output = new DataOutputStream(client.getOutputStream());
             boolean connectionActive = true;
 
-            while (connectionActive) {
+            while (connectionActive && !client.isClosed()) {
                 String pseudo = input.readUTF(); // lit pseudo envoyé
                 String message = input.readUTF(); // lit message associé
 
@@ -45,16 +45,19 @@ public class ServerMessageReceptor extends Thread {
                     // si c'est un autre message il s'affiche
                     System.out.println("message : " + message); // affiche le message sur la console
                     Server.sendMessagesToClients(message, pseudo); // envoie le message à la table des clients
+                    System.out.println("Connexion active  : " + connectionActive);
                 }
             }
         } catch (IOException e) {
-            System.out.println("erreur"); // affiche le message sur la console
-            throw new RuntimeException(e);
+            System.out.println("erreur dans la boucle while"); // affiche le message sur la console
+            //throw new RuntimeException(e);
         }
             try {
                 client.close();
             } catch (IOException e) {
                 //we do nothing
+                System.out.println("erreur en fermant le socket"); // affiche le message sur la console
+
             }
         }
     }
