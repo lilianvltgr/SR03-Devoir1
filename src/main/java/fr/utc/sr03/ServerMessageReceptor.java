@@ -27,7 +27,7 @@ public class ServerMessageReceptor extends Thread {
             DataOutputStream output = new DataOutputStream(client.getOutputStream());
             boolean connectionActive = true;
 
-            while (connectionActive && !client.isClosed()) {
+            while (connectionActive) {
                 String pseudo = input.readUTF(); // lit pseudo envoyé
                 String message = input.readUTF(); // lit message associé
 
@@ -35,6 +35,7 @@ public class ServerMessageReceptor extends Thread {
                 if (message.equals("exit")) {
                     // client supprimé de la table de hashage
                     Server.removeFromConnectedClients(pseudo, output);
+//                    wait(1000);
                     // envoie message autres utilisateurs
                     message = "a quitté la conversation.";
                     Server.sendDisconnectionMessageToClients(message, pseudo);
@@ -49,14 +50,15 @@ public class ServerMessageReceptor extends Thread {
                 }
             }
         } catch (IOException e) {
-            System.out.println("erreur dans la boucle while"); // affiche le message sur la console
-            //throw new RuntimeException(e);
+            System.out.println("Erreur dans la boucle while"); // affiche le message sur la console
+            throw new RuntimeException(e);
         }
-            try {
+        try {
+            if (!client.isClosed())
                 client.close();
             } catch (IOException e) {
                 //we do nothing
-                System.out.println("erreur en fermant le socket"); // affiche le message sur la console
+            System.out.println("Erreur en fermant le socket"); // affiche le message sur la console
 
             }
         }

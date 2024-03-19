@@ -26,15 +26,16 @@ public class ClientMessageReceptor extends Thread {
     public void run() {
         try {
             DataInputStream intput = new DataInputStream(communication.getInputStream());
-            while (Client.connectionActive && !communication.isClosed()) {
+            while (Client.connectionActive) {
                 //lecture du message
                 String pseudo = intput.readUTF();
                 String message = intput.readUTF();
                 System.out.println(pseudo + " " + message);
             }
         } catch (IOException e) {
-            System.out.println(Client.connectionActive);
-            throw new RuntimeException(e);
+//            System.out.println(Client.connectionActive);
+            if (Client.connectionActive)
+                throw new RuntimeException(e);
         }
     }
 }

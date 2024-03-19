@@ -18,7 +18,7 @@ public class Server {
     public static Socket newClient;
 
     public static int nbPseudosConnectes;
-    public static HashMap<String, DataOutputStream> connectedClients;
+    public volatile static HashMap<String, DataOutputStream> connectedClients;
 
     private static boolean isExisting(String pseudo) {
         //return the existance of a pseudo in the connectedClients
@@ -37,15 +37,20 @@ public class Server {
     }
 
     public static void removeFromConnectedClients(String pseudo, DataOutputStream outputClient) {
-        connectedClients.remove(pseudo, outputClient);
+        boolean removed = connectedClients.remove(pseudo, connectedClients.get(pseudo));
         nbPseudosConnectes--;
+        if (removed)
+            System.out.println(pseudo + " removed from the hashtable");
+        else
+            System.out.println(pseudo + " failed to be removed from the hashtable");
+
     }
 
     protected static void sendMessagesToClients(String message, String messagePseudo) throws IOException {
         for (Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
             String pseudo = entry.getKey();
             DataOutputStream output = entry.getValue();
-            System.out.println("pseudo de la connectedClients : " + pseudo);
+            System.out.println("Message envoyé au client " + pseudo);
             String finalPseudo = messagePseudo;
             if (pseudo.equals(messagePseudo)) {
                 // If the current client is the one who wrote the message we display "Moi" instead of the client pseudo
@@ -67,12 +72,13 @@ public class Server {
         }
     }
 
-    protected static void sendDisconnectionMessageToClients(String message, String newPseudo) throws IOException {
+    protected static void sendDisconnectionMessageToClients(String message, String disconnectingPseudo) throws IOException {
         for (Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
             String pseudo = entry.getKey(); // récupère clé table hashage
             DataOutputStream output = entry.getValue(); // prend valeur sortie
-            System.out.println("pseudo de la connectedClients : " + pseudo); // affiche pseudo
-            output.writeUTF(newPseudo);
+//            if(!pseudo.equals(disconnectingPseudo)){
+            //if the client is the one who disconnects
+            output.writeUTF(disconnectingPseudo);
             output.writeUTF(message);
         }
     }
@@ -100,7 +106,7 @@ public class Server {
                 output.writeBoolean(false);
                 pseudo = input.readUTF();
             }
-            //TODO mettre la création du pseudo dans une fonction
+            //TODO mettre la création du pseudo dans une fonction + thread pour les connexions simultanées
 
 
             output.writeBoolean(true);

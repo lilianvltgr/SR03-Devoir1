@@ -28,7 +28,7 @@ public class ClientMessageSender extends Thread {
             Scanner sc = new Scanner(System.in);
             DataOutputStream output = new DataOutputStream(communication.getOutputStream());
 
-            while (Client.connectionActive && !communication.isClosed()) {
+            while (Client.connectionActive) {
                 //lecture du message
                 String message = sc.nextLine();
                 //envoi du message au thread server
@@ -40,7 +40,8 @@ public class ClientMessageSender extends Thread {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            if (Client.connectionActive)
+                throw new RuntimeException(e);
         }
     }
 }
