@@ -17,9 +17,7 @@ public class ServerMessageReceptor extends Thread {
     public ServerMessageReceptor(Socket client) {
         this.client = client;
     }
-
     @Override
-
     // Fonction permettant de faire tourner le thread
     public void run() {
         try {

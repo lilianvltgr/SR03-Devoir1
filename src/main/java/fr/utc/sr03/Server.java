@@ -34,6 +34,7 @@ public class Server {
     public static void addToconnectedClients(String pseudo, DataOutputStream outputClient) {
         connectedClients.put(pseudo, outputClient);
         nbPseudosConnectes++;
+        System.out.println(pseudo + " added to the hashtable");
     }
 
     public static void removeFromConnectedClients(String pseudo, DataOutputStream outputClient) {
@@ -43,9 +44,7 @@ public class Server {
             System.out.println(pseudo + " removed from the hashtable");
         else
             System.out.println(pseudo + " failed to be removed from the hashtable");
-
     }
-
     protected static void sendMessagesToClients(String message, String messagePseudo) throws IOException {
         for (Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
             String pseudo = entry.getKey();
@@ -60,26 +59,26 @@ public class Server {
             output.writeUTF(message);
         }
     }
-
-    //TODO Résoudre le pb : lorsqu'un client se connecte il voit son message d'arrivée dans la conv et le "Vous êtes connectés"
     protected static void sendArrivalMessageToClients(String message, String newPseudo) throws IOException {
         for (Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
-            String pseudo = entry.getKey(); // récupère clé table hashage
-            DataOutputStream output = entry.getValue(); // prend valeur sortie
-            System.out.println("pseudo de la connectedClients : " + pseudo); // affiche pseudo
-            output.writeUTF(newPseudo);
-            output.writeUTF(message);
+            String pseudo = entry.getKey(); // getting the pseudo (key of the hashtable)
+            if (!newPseudo.equals(pseudo)) {
+                //if statement that prevent from display the arrival message to the new client
+                DataOutputStream output = entry.getValue(); // getting the outputstream (value of the hashtable)
+                output.writeUTF(newPseudo);
+                output.writeUTF(message);
+            }
         }
     }
-
     protected static void sendDisconnectionMessageToClients(String message, String disconnectingPseudo) throws IOException {
         for (Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
-            String pseudo = entry.getKey(); // récupère clé table hashage
-            DataOutputStream output = entry.getValue(); // prend valeur sortie
-//            if(!pseudo.equals(disconnectingPseudo)){
-            //if the client is the one who disconnects
+            String pseudo = entry.getKey(); // getting the pseudo (key of the hashtable)
+            DataOutputStream output = entry.getValue(); // getting the outputstream (value of the hashtable)
+            if (!pseudo.equals(disconnectingPseudo)) {
+                //if the client is the one who disconnects we don't display the disconnection message
             output.writeUTF(disconnectingPseudo);
             output.writeUTF(message);
+            }
         }
     }
 
@@ -87,8 +86,6 @@ public class Server {
         connectedClients = new HashMap<>();
         nbPseudosConnectes = 0;
         connection = new ServerSocket(10080);
-
-
         while (true) {
             newClient = connection.accept();
             //lecture du pseudo et vérification qu'il n'est pas dans la liste des pseudos utilisés
@@ -108,17 +105,15 @@ public class Server {
             }
             //TODO mettre la création du pseudo dans une fonction + thread pour les connexions simultanées
 
-
             output.writeBoolean(true);
             // add the pseudo to the hashtable
             addToconnectedClients(pseudo, output);
-            System.out.println("Pseudo " + pseudo + " added to the array");
+
             String messageArrive = "a rejoint la conversation. ";
             sendArrivalMessageToClients(messageArrive, pseudo);
 
             ServerMessageReceptor thread = new ServerMessageReceptor(newClient);
             thread.start();
-
         }
     }
 }

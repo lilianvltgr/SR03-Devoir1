@@ -3,28 +3,19 @@ package fr.utc.sr03;
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 
-/**
- * classe Client permettant d'effectuer une connexion
- * auprès du serveur et lancer les deux threads de communication
- * ClientMessageReceptor pour intercepter les messages venant du serveur
- * et ClientMessageSender permettant de récupérer les messages saisis
- * par l’utilisateur et de les transmettre au serveur
- */
 
+/**
+ Client class that enables a connection
+ to the server and launches the two communication threads:
+ ClientMessageReceptor to intercept messages coming from the server,
+ and ClientMessageSender to retrieve messages entered
+ by the user and transmit them to the server.
+ */
 public class Client {
     static public Socket communication;
     static volatile boolean connectionActive = true;
-
-    public Client(String host, int port) throws IOException {
-        Socket communication = new Socket(host, port);
-    }
-
     public static void main(String[] args) throws IOException, InterruptedException {
         Scanner sc = new Scanner(System.in); // scanner pour entrée console
 
@@ -56,7 +47,7 @@ public class Client {
         ClientMessageReceptor threadMessageReceptor = new ClientMessageReceptor(communication);
         threadMessageReceptor.start();
         while (connectionActive) {
-            //while the communication is active, the main programm waits
+            /* while the communication is active, the main programm waits */
         }
         System.out.println("Déconnection en cours");
         sleep(2000);

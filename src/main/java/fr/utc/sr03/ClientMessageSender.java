@@ -1,16 +1,13 @@
 package fr.utc.sr03;
-
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 
 /**
- * Classe héritant des caractéristiques des threads permettant
- * au client d'écrire un message sur la console et de l'envoyer au serveur.
+ Class inheriting the characteristics of threads, allowing
+ the client to write a message on the console and send it to the server.
  */
-
 public class ClientMessageSender extends Thread {
     public Socket communication;
     private String pseudo;
