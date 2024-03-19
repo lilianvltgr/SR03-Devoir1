@@ -30,20 +30,22 @@ public class Client {
 
         // Connexion serveur
         communication = new Socket("localhost", 10080); // socket créée
-        System.out.println("Connecté");
-        System.out.println("Ecrivez votre pseudo");
-
-
         // Instanciations des pipes
         DataInputStream input = new DataInputStream(communication.getInputStream()); // pipe entrée texte
         DataOutputStream output = new DataOutputStream(communication.getOutputStream()); // pipe sortie texte
 
         // Création du pseudo + connection au chat
         String pseudo;
-        while ((pseudo = sc.next()) == null) {
+        do {
             System.out.println("Ecrivez votre pseudo");
-        }
+        } while ((pseudo = sc.next()) == null);
         output.writeUTF(pseudo); // ecriture pipe sortie pseudo créé
+        while (!input.readBoolean()) {
+            do {
+                System.out.println("Le pseudo est indisponible, choisissez en un autre");
+            } while ((pseudo = sc.next()) == null);
+            output.writeUTF(pseudo);
+        }
         System.out.println("Vous êtes connectés");
 
         //New message sender thread

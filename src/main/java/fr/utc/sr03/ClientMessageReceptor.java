@@ -26,7 +26,7 @@ public class ClientMessageReceptor extends Thread {
     public void run() {
         try {
             DataInputStream intput = new DataInputStream(communication.getInputStream());
-            while (Client.connectionActive) {
+            while (Client.connectionActive && !communication.isClosed()) {
                 //lecture du message
                 String pseudo = intput.readUTF();
                 String message = intput.readUTF();
