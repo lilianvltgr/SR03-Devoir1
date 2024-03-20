@@ -7,10 +7,11 @@ import java.net.Socket;
 import java.util.HashMap;
 
 /**
- * Classe héritant des caractéristiques des threads permettant
- * au client de recevoir un message envoyé par le serveur et
- * de l'afficher sur sa console personnelle.
+ * Class inheriting the characteristics of threads, allowing
+ * the client to receive a message sent by the server and
+ * display it on their personal console.
  */
+
 public class ServerMessageReceptor extends Thread {
     private Socket client;
 //TODO voir l'interet de mettre les attributs en final
@@ -18,44 +19,62 @@ public class ServerMessageReceptor extends Thread {
         this.client = client;
     }
     @Override
-    // Fonction permettant de faire tourner le thread
+    /**
+     * Method to run the communication thread for receiving messages from the client.
+     * Reads messages sent from the client via the input stream and prints them to the console
+     * while the connection is still active.
+     * If it is an exit message, the client is disconnected ; the thread is closed and
+     * the other clients are informed of the departure.
+     */
     public void run() {
         try {
+
+            // Create a DataInputStream to read input from the client's input stream
             DataInputStream input = new DataInputStream(client.getInputStream());
-            DataOutputStream output = new DataOutputStream(client.getOutputStream());
+
+            DataOutputStream output = new DataOutputStream(client.getOutputStream()); // à enlever ?
             boolean connectionActive = true;
 
             while (connectionActive) {
-                String pseudo = input.readUTF(); // lit pseudo envoyé
-                String message = input.readUTF(); // lit message associé
+                // Reads pseudo of the client and the message just sent.
+                String pseudo = input.readUTF();
+                String message = input.readUTF();
 
-                //Si l'utilisateur veut quitter la conversation, il a entré exit dans la console
+                //If the client wants to leave the chat, he sends "exit"
                 if (message.equals("exit")) {
-                    // client supprimé de la table de hashage
-                    Server.removeFromConnectedClients(pseudo, output);
+
+                    //The client pseudo is removed from the hashtable
+                    Server.removeFromConnectedClients(pseudo);
 //                    wait(1000);
-                    // envoie message autres utilisateurs
+
+                    // The other clients still connected are informed of this departure
                     message = "a quitté la conversation.";
                     Server.sendDisconnectionMessageToClients(message, pseudo);
+
+                    // The connection between the server and this client is no longer active
                     connectionActive = false;
                     System.out.println("Connexion active  : " + connectionActive);
 
                 } else {
-                    // si c'est un autre message il s'affiche
-                    System.out.println("message : " + message); // affiche le message sur la console
-                    Server.sendMessagesToClients(message, pseudo); // envoie le message à la table des clients
+                    // The message is well received
+                    System.out.println("message : " + message);
+
+                    // The message is broadcasted to every client currently connected
+                    Server.sendMessagesToClients(message, pseudo);
+
+                    // The connection between the server and this client is still active
                     System.out.println("Connexion active  : " + connectionActive);
                 }
             }
         } catch (IOException e) {
-            System.out.println("Erreur dans la boucle while"); // affiche le message sur la console
+            System.out.println("Erreur dans la boucle while");
             throw new RuntimeException(e);
         }
         try {
             if (!client.isClosed())
                 client.close();
             } catch (IOException e) {
-                //we do nothing
+                // Nothing is done
             System.out.println("Erreur en fermant le socket"); // affiche le message sur la console
 
             }

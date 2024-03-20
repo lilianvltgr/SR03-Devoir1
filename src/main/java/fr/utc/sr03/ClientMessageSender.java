@@ -5,9 +5,11 @@ import java.net.Socket;
 import java.util.Scanner;
 
 /**
- Class inheriting the characteristics of threads, allowing
- the client to write a message on the console and send it to the server.
+ * Class inheriting the characteristics of threads, enabling
+ * the client to receive a message sent by the server and
+ * display it on their personal console.
  */
+
 public class ClientMessageSender extends Thread {
     public Socket communication;
     private String pseudo;
@@ -19,20 +21,33 @@ public class ClientMessageSender extends Thread {
     }
 
     @Override
-    // Fonction permettant de faire tourner le thread
+    /**
+     * Method to run the communication thread for sending messages to the server.
+     * Reads messages from the input stream and writes them to the output stream.
+     * This method runs in a loop until the connection is active, facilitating continuous communication.
+     */
+
     public void run() {
         try {
+            // Create a Scanner object to read input from the standard input (keyboard)
             Scanner sc = new Scanner(System.in);
+
+            // Create a DataOutputStream to write text output to the server's communication socket
             DataOutputStream output = new DataOutputStream(communication.getOutputStream());
 
+            // While the connection between the server and the client is indeed active
             while (Client.connectionActive) {
-                //lecture du message
+
+                // Read the line typed by the user
                 String message = sc.nextLine();
-                //envoi du message au thread server
+
+                // The message entered by the user is written to the output stream along with his pseudo
                 output.writeUTF(pseudo);
                 output.writeUTF(message);
+
+                // if the message written equals "exit", the connection between
+                // the server and this client is no longer active
                 if (message.equals("exit")) {
-                    // Code pour envoyer un message de déconnexion au serveur
                     Client.connectionActive = false;
                 }
             }

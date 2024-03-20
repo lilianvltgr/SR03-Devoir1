@@ -7,21 +7,32 @@ import java.io.DataOutputStream;
 import java.util.*;
 
 /**
- * Classe Server qui exécute une boucle infinie pour accepter les demandes entrantes.
- * Il stocke l'objet socket associé à cette connection dans un tableau clients et
- * lance un thread qui lit le message envoyé à cet objet.
- * Lorsqu'il reçoit une connexion,  message ou une deconnexion d'un des clients,
- * il diffuse l'information à l'ensemble des clients.
+ * Server class that runs an infinite loop to accept incoming requests.
+ * It stores the socket object associated with this connection in a clients array and
+ * launches a thread that reads the message sent to this object.
+ * When it receives a connection, message, or disconnection from any of the clients,
+ * it broadcasts the information to all clients.
  */
+
 public class Server {
     static public ServerSocket connection;
     public static Socket newClient;
 
+    // counter of pseudos currently connected
     public static int nbPseudosConnectes;
+
+    // Array containing the pseudos of connected clients
     public volatile static HashMap<String, DataOutputStream> connectedClients;
 
+
+    /**
+     * Function to check if a pseudo exists in the connectedClients array.
+     *
+     * @param pseudo The pseudo to be checked for existence in the connectedClients array.
+     * @return true if the pseudo exists in the connectedClients array, otherwise returns false.
+     */
     private static boolean isExisting(String pseudo) {
-        //return the existance of a pseudo in the connectedClients
+        //return the existence of a pseudo in the connectedClients
         if (nbPseudosConnectes == 0)
             return false;
         for (Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
@@ -31,13 +42,24 @@ public class Server {
         return false;
     }
 
-    public static void addToconnectedClients(String pseudo, DataOutputStream outputClient) {
+    /**
+     * Function to add a new pseudo to the connectedClients array.
+     *
+     * @param pseudo The pseudo to be added to the connectedClients array.
+     * @param outputClient The DataOutputStream associated with the client.
+     */
+    public static void addToConnectedClients(String pseudo, DataOutputStream outputClient) {
         connectedClients.put(pseudo, outputClient);
         nbPseudosConnectes++;
         System.out.println(pseudo + " added to the hashtable");
     }
 
-    public static void removeFromConnectedClients(String pseudo, DataOutputStream outputClient) {
+    /**
+     * Function to remove e pseudo from the connectedClients array.
+     *
+     * @param pseudo The pseudo to be removed from the connectedClients array.
+     */
+    public static void removeFromConnectedClients(String pseudo) {
         boolean removed = connectedClients.remove(pseudo, connectedClients.get(pseudo));
         nbPseudosConnectes--;
         if (removed)
@@ -45,6 +67,15 @@ public class Server {
         else
             System.out.println(pseudo + " failed to be removed from the hashtable");
     }
+
+    /**
+     * Function to send a message received from a client to all the clients
+     * contained in the connectedClients array.
+     *
+     * @param message The message to send to all the clients.
+     * @param messagePseudo The pseudo of the initial client message sender.
+     * @throws IOException If an I/O problem occurs while sending the message.
+     */
     protected static void sendMessagesToClients(String message, String messagePseudo) throws IOException {
         for (Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
             String pseudo = entry.getKey();
@@ -59,56 +90,99 @@ public class Server {
             output.writeUTF(message);
         }
     }
+
+    /**
+     * Function to send a message to inform the clients in the connectedClients array
+     * that a new client has joined the chat.
+     *
+     * @param message The message to send to all the clients.
+     * @param newPseudo The pseudo of the newly added client.
+     * @throws IOException If an I/O problem occurs while sending the message.
+     */
     protected static void sendArrivalMessageToClients(String message, String newPseudo) throws IOException {
         for (Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
-            String pseudo = entry.getKey(); // getting the pseudo (key of the hashtable)
+            // Getting the pseudo (key of the hashtable)
+            String pseudo = entry.getKey();
+
+            //If statement that prevents from displaying the arrival message to the new client
             if (!newPseudo.equals(pseudo)) {
-                //if statement that prevent from display the arrival message to the new client
-                DataOutputStream output = entry.getValue(); // getting the outputstream (value of the hashtable)
+
+                // Getting the outputstream (value of the hashtable)
+                DataOutputStream output = entry.getValue();
+
+                // NewPseudo and arrival message are written separately to the server's output stream
                 output.writeUTF(newPseudo);
+                output.writeUTF(message);
+
+            }
+        }
+    }
+
+    /**
+     * Function to send a message to inform the clients still connected to the chat
+     * that one client has left the chat.
+     *
+     * @param message The message to send to clients contained in the connectedClients array.
+     * @param disconnectingPseudo The pseudo of the client who is leaving the chat.
+     * @throws IOException If an I/O problem occurs while sending the message.
+     */
+    protected static void sendDisconnectionMessageToClients(String message, String disconnectingPseudo) throws IOException {
+        for (Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
+
+            // Getting the pseudo (key of the hashtable)
+            String pseudo = entry.getKey();
+            // Getting the outputstream (value of the hashtable)
+            DataOutputStream output = entry.getValue();
+
+            //If the client is the one who disconnects we don't display the disconnection message
+            if (!pseudo.equals(disconnectingPseudo)) {
+
+                // DisconnectingPseudo and arrival message are written separately to the server's output stream
+                output.writeUTF(disconnectingPseudo);
                 output.writeUTF(message);
             }
         }
     }
-    protected static void sendDisconnectionMessageToClients(String message, String disconnectingPseudo) throws IOException {
-        for (Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
-            String pseudo = entry.getKey(); // getting the pseudo (key of the hashtable)
-            DataOutputStream output = entry.getValue(); // getting the outputstream (value of the hashtable)
-            if (!pseudo.equals(disconnectingPseudo)) {
-                //if the client is the one who disconnects we don't display the disconnection message
-            output.writeUTF(disconnectingPseudo);
-            output.writeUTF(message);
-            }
-        }
-    }
+
 
     public static void main(String[] args) throws IOException {
+
+        // Initialize the connectedClients map to store client information,
+        // set the count of connected pseudos to 0, and create a ServerSocket on port 10080 for incoming connections.
         connectedClients = new HashMap<>();
         nbPseudosConnectes = 0;
         connection = new ServerSocket(10080);
+
+        // Infinite while running to accept new connections
         while (true) {
+            // New connection accepted ; a new client will be entering the chat
             newClient = connection.accept();
-            //lecture du pseudo et vérification qu'il n'est pas dans la liste des pseudos utilisés
+
+            // Create a DataInputStream to read text input and a DataOutputStream to write text output
             DataInputStream input = new DataInputStream(newClient.getInputStream());
             DataOutputStream output = new DataOutputStream(newClient.getOutputStream());
+
+            // New pseudo is read
             String pseudo = input.readUTF();
 
+            // Case where a new message is sent from a client to the server
             if (pseudo.equals("envoiMessage")) {
                 String messagePseudo = input.readUTF();
                 String message = input.readUTF();
                 sendMessagesToClients(message, messagePseudo);
             }
-            //if the pseudo is existing already we tell the client to change it
+            //While the pseudo entered by the user already exists, prompt the user to enter it again
             while (isExisting(pseudo)) {
                 output.writeBoolean(false);
                 pseudo = input.readUTF();
             }
             //TODO mettre la création du pseudo dans une fonction + thread pour les connexions simultanées
-
             output.writeBoolean(true);
-            // add the pseudo to the hashtable
-            addToconnectedClients(pseudo, output);
 
+            // The pseudo is added to the connectedClients array.
+            addToConnectedClients(pseudo, output);
+
+            // A message is sent to the other client already connected to inform them about this arrival
             String messageArrive = "a rejoint la conversation. ";
             sendArrivalMessageToClients(messageArrive, pseudo);
 

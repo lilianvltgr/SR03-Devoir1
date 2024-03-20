@@ -26,5 +26,7 @@ Lorsqu'un client envoie un message au server : Contenu + Pseudo
 * Chaque client possède un thread pour ecrire les messages et un thread pour les afficher 
 
 #### Comment garantir l'utilisation d'un pseudo unique? 
-* While tant que le pseudo n'est pas valide on boucle
-* Création d'une fonction de choix de pseudo => fonction rappelée à chaque pb 
+* While tant que le pseudo n'est pas valide (dire ce que veut dire valide) on boucle
+* Création d'une fonction de choix de pseudo => fonction rappelée à chaque pb
+#### Comment vous faites pour gérer le cas d’une déconnexion de client sans que le serveur soit prévenu et vice-versa ? Implémenter la solution proposée.
+*
