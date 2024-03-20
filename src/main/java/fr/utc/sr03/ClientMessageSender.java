@@ -36,7 +36,7 @@ public class ClientMessageSender extends Thread {
             DataOutputStream output = new DataOutputStream(communication.getOutputStream());
 
             // While the connection between the server and the client is indeed active
-            while (Client.connectionActive) {
+            while (Client.activeConnection) {
 
                 // Read the line typed by the user
                 String message = sc.nextLine();
@@ -48,11 +48,11 @@ public class ClientMessageSender extends Thread {
                 // if the message written equals "exit", the connection between
                 // the server and this client is no longer active
                 if (message.equals("exit")) {
-                    Client.connectionActive = false;
+                    Client.activeConnection = false;
                 }
             }
         } catch (IOException e) {
-            if (Client.connectionActive)
+            if (Client.activeConnection)
                 throw new RuntimeException(e);
         }
     }

@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class ClientMessageReceptor extends Thread {
 
     public Socket communication;
-
+    //TODO Réflechir au passage en private
     /**
      * Constructor
      *
@@ -35,7 +35,7 @@ public class ClientMessageReceptor extends Thread {
             DataInputStream input = new DataInputStream(communication.getInputStream());
 
             // While the connection between the server and this client is indeed active
-            while (Client.connectionActive) {
+            while (Client.activeConnection) {
 
                 // Client pseudo and message sent are read separately
                 String pseudo = input.readUTF();
@@ -45,8 +45,7 @@ public class ClientMessageReceptor extends Thread {
                 System.out.println(pseudo + " " + message);
             }
         } catch (IOException e) {
-//            System.out.println(Client.connectionActive); ??
-            if (Client.connectionActive)
+            if (Client.activeConnection)
                 throw new RuntimeException(e);
         }
     }

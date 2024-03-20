@@ -14,9 +14,11 @@ import java.util.HashMap;
 
 public class ServerMessageReceptor extends Thread {
     private Socket client;
+    private String pseudo;
 //TODO voir l'interet de mettre les attributs en final
-    public ServerMessageReceptor(Socket client) {
+public ServerMessageReceptor(Socket client, String pseudo) {
         this.client = client;
+    this.pseudo = pseudo;
     }
     @Override
     /**
@@ -27,15 +29,13 @@ public class ServerMessageReceptor extends Thread {
      * the other clients are informed of the departure.
      */
     public void run() {
+        boolean activeConnection = true;
         try {
 
             // Create a DataInputStream to read input from the client's input stream
             DataInputStream input = new DataInputStream(client.getInputStream());
 
-            DataOutputStream output = new DataOutputStream(client.getOutputStream()); // à enlever ?
-            boolean connectionActive = true;
-
-            while (connectionActive) {
+            while (activeConnection) {
                 // Reads pseudo of the client and the message just sent.
                 String pseudo = input.readUTF();
                 String message = input.readUTF();
@@ -45,15 +45,14 @@ public class ServerMessageReceptor extends Thread {
 
                     //The client pseudo is removed from the hashtable
                     Server.removeFromConnectedClients(pseudo);
-//                    wait(1000);
 
                     // The other clients still connected are informed of this departure
                     message = "a quitté la conversation.";
                     Server.sendDisconnectionMessageToClients(message, pseudo);
 
                     // The connection between the server and this client is no longer active
-                    connectionActive = false;
-                    System.out.println("Connexion active  : " + connectionActive);
+                    activeConnection = false;
+                    System.out.println("Connexion active  : " + activeConnection);
 
                 } else {
                     // The message is well received
@@ -63,12 +62,19 @@ public class ServerMessageReceptor extends Thread {
                     Server.sendMessagesToClients(message, pseudo);
 
                     // The connection between the server and this client is still active
-                    System.out.println("Connexion active  : " + connectionActive);
+                    System.out.println("Connexion active  : " + activeConnection);
                 }
             }
         } catch (IOException e) {
-            System.out.println("Erreur dans la boucle while");
-            throw new RuntimeException(e);
+            if (activeConnection) {
+                System.out.println(client.isClosed());
+                try {
+                    Server.removeFromConnectedClients(pseudo);
+                    Server.sendDisconnectionMessageToClients("a quitté la conversation de façon imprévue", pseudo);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
         }
         try {
             if (!client.isClosed())
@@ -76,7 +82,6 @@ public class ServerMessageReceptor extends Thread {
             } catch (IOException e) {
                 // Nothing is done
             System.out.println("Erreur en fermant le socket"); // affiche le message sur la console
-
             }
         }
     }

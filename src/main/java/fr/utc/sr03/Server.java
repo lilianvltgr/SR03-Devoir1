@@ -155,39 +155,55 @@ public class Server {
 
         // Infinite while running to accept new connections
         while (true) {
-            // New connection accepted ; a new client will be entering the chat
-            newClient = connection.accept();
+            String pseudo = "";
+            try {
 
-            // Create a DataInputStream to read text input and a DataOutputStream to write text output
-            DataInputStream input = new DataInputStream(newClient.getInputStream());
-            DataOutputStream output = new DataOutputStream(newClient.getOutputStream());
 
-            // New pseudo is read
-            String pseudo = input.readUTF();
+                // New connection accepted ; a new client will be entering the chat
+                newClient = connection.accept();
 
-            // Case where a new message is sent from a client to the server
-            if (pseudo.equals("envoiMessage")) {
-                String messagePseudo = input.readUTF();
-                String message = input.readUTF();
-                sendMessagesToClients(message, messagePseudo);
-            }
-            //While the pseudo entered by the user already exists, prompt the user to enter it again
-            while (isExisting(pseudo)) {
-                output.writeBoolean(false);
+                // Create a DataInputStream to read text input and a DataOutputStream to write text output
+                DataInputStream input = new DataInputStream(newClient.getInputStream());
+                DataOutputStream output = new DataOutputStream(newClient.getOutputStream());
+
+                // New pseudo is read
                 pseudo = input.readUTF();
+
+                // Case where a new message is sent from a client to the server
+                if (pseudo.equals("envoiMessage")) {
+                    String messagePseudo = input.readUTF();
+                    String message = input.readUTF();
+                    sendMessagesToClients(message, messagePseudo);
+                }
+                //While the pseudo entered by the user already exists, prompt the user to enter it again
+                while (isExisting(pseudo)) {
+                    // The server send "false" to the client beacause the pseudo is used already
+                    output.writeBoolean(false);
+                    pseudo = input.readUTF();
+                }
+                //TODO mettre la création du pseudo dans une fonction + thread pour les connexions simultanées
+                output.writeBoolean(true);
+
+                // The pseudo is added to the connectedClients array.
+                addToConnectedClients(pseudo, output);
+
+                // A message is sent to the other client already connected to inform them about this arrival
+                String messageArrive = "a rejoint la conversation. ";
+                sendArrivalMessageToClients(messageArrive, pseudo);
+
+                ServerMessageReceptor thread = new ServerMessageReceptor(newClient, pseudo);
+                thread.start();
+            } catch (Exception e) {
+                if (pseudo.isEmpty()) {
+                    try {
+                        if (!newClient.isClosed())
+                            newClient.close();
+                    } catch (IOException ex) {
+                        // Nothing is done
+                    }
+                }
             }
-            //TODO mettre la création du pseudo dans une fonction + thread pour les connexions simultanées
-            output.writeBoolean(true);
-
-            // The pseudo is added to the connectedClients array.
-            addToConnectedClients(pseudo, output);
-
-            // A message is sent to the other client already connected to inform them about this arrival
-            String messageArrive = "a rejoint la conversation. ";
-            sendArrivalMessageToClients(messageArrive, pseudo);
-
-            ServerMessageReceptor thread = new ServerMessageReceptor(newClient);
-            thread.start();
+        }
         }
     }
-}
+

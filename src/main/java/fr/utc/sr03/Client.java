@@ -16,7 +16,7 @@ import static java.lang.Thread.sleep;
 
 public class Client {
     static public Socket communication;
-    static volatile boolean connectionActive = true;
+    static volatile boolean activeConnection = true;
     public static void main(String[] args) throws IOException, InterruptedException {
 
         // Create a Scanner object to read input from the standard input (keyboard)
@@ -61,7 +61,7 @@ public class Client {
         ClientMessageReceptor threadMessageReceptor = new ClientMessageReceptor(communication);
         threadMessageReceptor.start();
 
-        while (connectionActive) {
+        while (activeConnection) {
             /* while the communication is active, the main programm waits */
         }
 
