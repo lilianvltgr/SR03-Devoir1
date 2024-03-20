@@ -29,7 +29,7 @@ public class Client {
         DataInputStream input = new DataInputStream(communication.getInputStream());
         DataOutputStream output = new DataOutputStream(communication.getOutputStream());
 
-        // Create a pseudo and connect the client to the chat
+        // Create a pseudo and connect the client to the chat.
         String pseudo;
 
         // While the pseudo entered by the user is empty, prompt the user to enter it again
