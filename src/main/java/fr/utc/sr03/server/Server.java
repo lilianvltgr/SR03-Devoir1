@@ -1,4 +1,4 @@
-package fr.utc.sr03;
+package fr.utc.sr03.server;
 
 import java.io.IOException;
 import java.net.*;
@@ -31,7 +31,7 @@ public class Server {
      * @param pseudo The pseudo to be checked for existence in the connectedClients array.
      * @return true if the pseudo exists in the connectedClients array, otherwise returns false.
      */
-    private static boolean isExisting(String pseudo) {
+    protected static boolean isExisting(String pseudo) {
         //return the existence of a pseudo in the connectedClients
         if (nbPseudosConnectes == 0)
             return false;
@@ -48,7 +48,7 @@ public class Server {
      * @param pseudo The pseudo to be added to the connectedClients array.
      * @param outputClient The DataOutputStream associated with the client.
      */
-    public static void addToConnectedClients(String pseudo, DataOutputStream outputClient) {
+    protected static void addToConnectedClients(String pseudo, DataOutputStream outputClient) {
         connectedClients.put(pseudo, outputClient);
         nbPseudosConnectes++;
         System.out.println(pseudo + " added to the hashtable");
@@ -59,7 +59,7 @@ public class Server {
      *
      * @param pseudo The pseudo to be removed from the connectedClients array.
      */
-    public static void removeFromConnectedClients(String pseudo) {
+    protected static void removeFromConnectedClients(String pseudo) {
         boolean removed = connectedClients.remove(pseudo, connectedClients.get(pseudo));
         nbPseudosConnectes--;
         if (removed)
@@ -160,36 +160,14 @@ public class Server {
                 newClient = connection.accept();
 
                 // Create a DataInputStream to read text input and a DataOutputStream to write text output
-                DataInputStream input = new DataInputStream(newClient.getInputStream());
-                DataOutputStream output = new DataOutputStream(newClient.getOutputStream());
+//                DataInputStream input = new DataInputStream(newClient.getInputStream());
+//                DataOutputStream output = new DataOutputStream(newClient.getOutputStream());
 
-                // New pseudo is read
-                pseudo = input.readUTF();
 
-                // Case where a new message is sent from a client to the server
-//                if (pseudo.equals("envoiMessage")) {
-//                    String messagePseudo = input.readUTF();
-//                    String message = input.readUTF();
-//                    sendMessagesToClients(message, messagePseudo);
-//                }
-                //While the pseudo entered by the user already exists, prompt the user to enter it again
-                while (isExisting(pseudo)) {
-                    // The server send "false" to the client beacause the pseudo is used already
-                    output.writeBoolean(false);
-                    pseudo = input.readUTF();
-                }
-                //TODO mettre la création du pseudo dans une fonction + thread pour les connexions simultanées
-                output.writeBoolean(true);
-
-                // The pseudo is added to the connectedClients array.
-                addToConnectedClients(pseudo, output);
-
-                // A message is sent to the other client already connected to inform them about this arrival
-                sendArrivalMessageToClients(pseudo);
-
-                ServerMessageReceptor thread = new ServerMessageReceptor(newClient, pseudo);
+                ServerMessageReceptor thread = new ServerMessageReceptor(newClient);
                 thread.start();
             } catch (Exception e) {
+
                 if (pseudo.isEmpty()) {
                     try {
                         if (!newClient.isClosed())

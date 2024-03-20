@@ -1,10 +1,11 @@
-package fr.utc.sr03;
+package fr.utc.sr03.server;
+
+import fr.utc.sr03.server.Server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.HashMap;
 
 /**
  * Class inheriting the characteristics of threads, allowing
@@ -15,11 +16,13 @@ import java.util.HashMap;
 public class ServerMessageReceptor extends Thread {
     private Socket client;
     private String pseudo;
-//TODO voir l'interet de mettre les attributs en final
-public ServerMessageReceptor(Socket client, String pseudo) {
+
+    //TODO voir l'interet de mettre les attributs en final
+    public ServerMessageReceptor(Socket client) {
         this.client = client;
-    this.pseudo = pseudo;
+        this.pseudo = "";
     }
+
     @Override
     /**
      * Method to run the communication thread for receiving messages from the client.
@@ -31,9 +34,33 @@ public ServerMessageReceptor(Socket client, String pseudo) {
     public void run() {
         boolean activeConnection = true;
         try {
-
-            // Create a DataInputStream to read input from the client's input stream
             DataInputStream input = new DataInputStream(client.getInputStream());
+            DataOutputStream output = new DataOutputStream(client.getOutputStream());
+            // New pseudo is read
+
+            pseudo = input.readUTF();
+
+            // Case where a new message is sent from a client to the server
+//                if (pseudo.equals("envoiMessage")) {
+//                    String messagePseudo = input.readUTF();
+//                    String message = input.readUTF();
+//                    sendMessagesToClients(message, messagePseudo);
+//                }
+            //While the pseudo entered by the user already exists, prompt the user to enter it again
+            while (Server.isExisting(pseudo)) {
+                // The server send "false" to the client beacause the pseudo is used already
+                output.writeBoolean(false);
+                pseudo = input.readUTF();
+            }
+            //TODO mettre la création du pseudo dans une fonction + thread pour les connexions simultanées
+            output.writeBoolean(true);
+
+            // The pseudo is added to the connectedClients array.
+            Server.addToConnectedClients(pseudo, output);
+
+            // A message is sent to the other client already connected to inform them about this arrival
+            Server.sendArrivalMessageToClients(pseudo);
+
 
             while (activeConnection) {
                 // Reads pseudo of the client and the message just sent.
@@ -66,7 +93,7 @@ public ServerMessageReceptor(Socket client, String pseudo) {
                 }
             }
         } catch (IOException e) {
-            if (activeConnection) {
+            if (!pseudo.isEmpty() && activeConnection) {
                 System.out.println(client.isClosed());
                 try {
                     Server.removeFromConnectedClients(pseudo);
@@ -79,10 +106,11 @@ public ServerMessageReceptor(Socket client, String pseudo) {
         try {
             if (!client.isClosed())
                 client.close();
-            } catch (IOException e) {
-                // Nothing is done
+        } catch (IOException exc) {
+            // Nothing is done
             System.out.println("Erreur en fermant le socket"); // affiche le message sur la console
-            }
         }
     }
+}
+
 

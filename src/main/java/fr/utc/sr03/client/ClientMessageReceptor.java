@@ -1,9 +1,10 @@
-package fr.utc.sr03;
+package fr.utc.sr03.client;
+
+import fr.utc.sr03.client.Client;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Scanner;
 
 /**
  * Class inheriting the characteristics of threads, allowing
