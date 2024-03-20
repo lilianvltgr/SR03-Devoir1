@@ -95,11 +95,10 @@ public class Server {
      * Function to send a message to inform the clients in the connectedClients array
      * that a new client has joined the chat.
      *
-     * @param message The message to send to all the clients.
      * @param newPseudo The pseudo of the newly added client.
      * @throws IOException If an I/O problem occurs while sending the message.
      */
-    protected static void sendArrivalMessageToClients(String message, String newPseudo) throws IOException {
+    protected static void sendArrivalMessageToClients(String newPseudo) throws IOException {
         for (Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
             // Getting the pseudo (key of the hashtable)
             String pseudo = entry.getKey();
@@ -112,7 +111,7 @@ public class Server {
 
                 // NewPseudo and arrival message are written separately to the server's output stream
                 output.writeUTF(newPseudo);
-                output.writeUTF(message);
+                output.writeUTF("a rejoint la conversation. ");
 
             }
         }
@@ -144,7 +143,6 @@ public class Server {
         }
     }
 
-
     public static void main(String[] args) throws IOException {
 
         // Initialize the connectedClients map to store client information,
@@ -158,7 +156,6 @@ public class Server {
             String pseudo = "";
             try {
 
-
                 // New connection accepted ; a new client will be entering the chat
                 newClient = connection.accept();
 
@@ -170,11 +167,11 @@ public class Server {
                 pseudo = input.readUTF();
 
                 // Case where a new message is sent from a client to the server
-                if (pseudo.equals("envoiMessage")) {
-                    String messagePseudo = input.readUTF();
-                    String message = input.readUTF();
-                    sendMessagesToClients(message, messagePseudo);
-                }
+//                if (pseudo.equals("envoiMessage")) {
+//                    String messagePseudo = input.readUTF();
+//                    String message = input.readUTF();
+//                    sendMessagesToClients(message, messagePseudo);
+//                }
                 //While the pseudo entered by the user already exists, prompt the user to enter it again
                 while (isExisting(pseudo)) {
                     // The server send "false" to the client beacause the pseudo is used already
@@ -188,8 +185,7 @@ public class Server {
                 addToConnectedClients(pseudo, output);
 
                 // A message is sent to the other client already connected to inform them about this arrival
-                String messageArrive = "a rejoint la conversation. ";
-                sendArrivalMessageToClients(messageArrive, pseudo);
+                sendArrivalMessageToClients(pseudo);
 
                 ServerMessageReceptor thread = new ServerMessageReceptor(newClient, pseudo);
                 thread.start();
