@@ -3,6 +3,7 @@ package fr.utc.sr03.clientPackage;
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
+
 import static java.lang.Thread.sleep;
 
 
@@ -18,9 +19,8 @@ public class Client {
     static public Socket communication;
     static volatile boolean activeConnection = true;
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) {
         try {
-
 
             // Create a Scanner object to read input from the standard input (keyboard)
             Scanner sc = new Scanner(System.in);
@@ -65,17 +65,20 @@ public class Client {
             threadMessageReceptor.start();
 
             while (activeConnection) {
-                /* while the communication is active, the main programm waits */
+                /* while the communication is active, the main program waits */
             }
             // Process of disconnection; closes the communication socket after 2 seconds
             System.out.println("Déconnection en cours");
-            sleep(2000);
-            communication.close();
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             activeConnection = false;
             System.out.println("Le serveur a un problème, retentez de vous connecter plus tard");
-            sleep(2000);
-            communication.close();
+        } finally {
+            try {
+                sleep(2000);
+                communication.close();
+            } catch (Exception ex) {
+                // if the closing does not work the program finishes
+            }
         }
     }
 }
