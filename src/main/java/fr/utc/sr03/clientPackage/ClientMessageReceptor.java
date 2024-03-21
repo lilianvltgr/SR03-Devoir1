@@ -1,6 +1,4 @@
-package fr.utc.sr03.client;
-
-import fr.utc.sr03.client.Client;
+package fr.utc.sr03.clientPackage;
 
 import java.io.DataInputStream;
 import java.io.IOException;

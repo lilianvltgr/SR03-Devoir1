@@ -1,6 +1,4 @@
-package fr.utc.sr03.server;
-
-import fr.utc.sr03.server.Server;
+package fr.utc.sr03.serverPackage;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

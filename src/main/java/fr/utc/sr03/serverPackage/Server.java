@@ -1,8 +1,7 @@
-package fr.utc.sr03.server;
+package fr.utc.sr03.serverPackage;
 
 import java.io.IOException;
 import java.net.*;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.*;
 

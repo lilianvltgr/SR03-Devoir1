@@ -1,4 +1,4 @@
-package fr.utc.sr03.client;
+package fr.utc.sr03.clientPackage;
 
 import java.io.*;
 import java.net.*;
