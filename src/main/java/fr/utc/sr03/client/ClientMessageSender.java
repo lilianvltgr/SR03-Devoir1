@@ -56,6 +56,8 @@ public class ClientMessageSender extends Thread {
         } catch (IOException e) {
             if (Client.activeConnection)
                 throw new RuntimeException(e);
+            System.out.println("test");
+
         }
     }
 }

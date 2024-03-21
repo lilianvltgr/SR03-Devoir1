@@ -46,8 +46,10 @@ public class ClientMessageReceptor extends Thread {
                 System.out.println(pseudo + " " + message);
             }
         } catch (IOException e) {
-            if (Client.activeConnection)
-                throw new RuntimeException(e);
+            if (Client.activeConnection) {
+                Client.activeConnection = false;
+                System.out.println("Le serveur a un problème, retentez de vous connecter plus tard");
+            }
         }
     }
 }
