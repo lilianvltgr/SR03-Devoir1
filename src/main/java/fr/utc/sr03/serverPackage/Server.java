@@ -68,6 +68,45 @@ public class Server {
     }
 
     /**
+     * Function to send a message to all the clients contained in the connectedClients array.
+     *
+     * @param message The message to send to all the clients.
+     * @param pseudo The pseudo of the initial client message sender
+     *               or the newly added client or the lastly disconnected client
+     * @throws IOException If an I/O problem occurs while sending the message.
+     */
+    protected static void sendMessageToClients(String message, String pseudo) throws IOException {
+        for (Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
+            // Getting the entryPseudo (key of the hashtable)
+            String entryPseudo = entry.getKey();
+            // Getting the outputstream (value of the hashtable)
+            DataOutputStream output = entry.getValue();
+
+            System.out.println("Message send to " + entryPseudo);
+
+            // If the message is informative : arrival or disconnection of a client
+            if (message.equals("a rejoint la conversation.") || message.equals("a quitté la conversation de façon imprévue.") || message.equals("a quitté la conversation.")){
+                if (!entryPseudo.equals(pseudo)) {
+                    // Concerned pseudo and situation message are written separately to the server's output stream
+                    output.writeUTF(pseudo);
+                    output.writeUTF(message);
+
+                }
+            }
+            // If the message is sent from another client : retransmission.
+            else {
+                String finalPseudo = pseudo;
+                if (entryPseudo.equals(pseudo)) {
+                    // If the current client is the one who wrote the message we display "Moi" instead of the client pseudo
+                    finalPseudo = "Moi";
+                }
+                // Concerned pseudo and retransmitted message are written separately to the server's output stream
+                output.writeUTF(finalPseudo + ":");
+                output.writeUTF(message);
+            }
+        }
+    }
+    /**
      * Function to send a message received from a client to all the clients
      * contained in the connectedClients array.
      *

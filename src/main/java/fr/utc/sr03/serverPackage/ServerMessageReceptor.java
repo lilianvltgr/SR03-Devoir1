@@ -57,7 +57,7 @@ public class ServerMessageReceptor extends Thread {
             Server.addToConnectedClients(pseudo, output);
 
             // A message is sent to the other client already connected to inform them about this arrival
-            Server.sendArrivalMessageToClients(pseudo);
+            Server.sendMessageToClients("a rejoint la conversation.", pseudo);
 
 
             while (activeConnection) {
@@ -72,8 +72,7 @@ public class ServerMessageReceptor extends Thread {
                     Server.removeFromConnectedClients(pseudo);
 
                     // The other clients still connected are informed of this departure
-                    message = "a quitté la conversation.";
-                    Server.sendDisconnectionMessageToClients(message, pseudo);
+                    Server.sendMessageToClients("a quitté la conversation.", pseudo);
 
                     // The connection between the server and this client is no longer active
                     activeConnection = false;
@@ -84,7 +83,7 @@ public class ServerMessageReceptor extends Thread {
                     System.out.println("message : " + message);
 
                     // The message is broadcasted to every client currently connected
-                    Server.sendMessagesToClients(message, pseudo);
+                    Server.sendMessageToClients(message, pseudo);
 
                     // The connection between the server and this client is still active
                     System.out.println("Connexion active  : " + activeConnection);
@@ -95,7 +94,7 @@ public class ServerMessageReceptor extends Thread {
                 System.out.println(client.isClosed());
                 try {
                     Server.removeFromConnectedClients(pseudo);
-                    Server.sendDisconnectionMessageToClients("a quitté la conversation de façon imprévue", pseudo);
+                    Server.sendMessageToClients("a quitté la conversation de façon imprévue.", pseudo);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
