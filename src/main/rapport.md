@@ -5,7 +5,7 @@
 
 ### Le projet
 
-### Concepts utilisés 
+### Concepts utilisés
 
 ### Objectifs fixés
 
@@ -47,4 +47,9 @@ Montrer tous les cas d’utilisations pratiques (via votre application sous form
 
 #### Départ brutal
 #### Serveur interrompu
+
+Questions :
+• Comment garantir qu’un pseudonyme est unique ? Implémenter la solution proposée.
+• Comment vous faites pour gérer le cas d’une déconnexion de client sans que le serveur
+soit prévenu et vice-versa ? Implémenter la solution proposée.
 

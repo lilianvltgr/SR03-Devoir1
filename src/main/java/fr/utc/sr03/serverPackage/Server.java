@@ -81,7 +81,6 @@ public class Server {
             String entryPseudo = entry.getKey();
             // Getting the outputstream (value of the hashtable)
             DataOutputStream output = entry.getValue();
-
             System.out.println("Message send to " + entryPseudo);
 
             // If the message is informative : arrival or disconnection of a client
@@ -90,7 +89,6 @@ public class Server {
                     // Concerned pseudo and situation message are written separately to the server's output stream
                     output.writeUTF(pseudo);
                     output.writeUTF(message);
-
                 }
             }
             // If the message is sent from another client : retransmission.
@@ -102,80 +100,6 @@ public class Server {
                 }
                 // Concerned pseudo and retransmitted message are written separately to the server's output stream
                 output.writeUTF(finalPseudo + ":");
-                output.writeUTF(message);
-            }
-        }
-    }
-    /**
-     * Function to send a message received from a client to all the clients
-     * contained in the connectedClients array.
-     *
-     * @param message The message to send to all the clients.
-     * @param messagePseudo The pseudo of the initial client message sender.
-     * @throws IOException If an I/O problem occurs while sending the message.
-     */
-    protected static void sendMessagesToClients(String message, String messagePseudo) throws IOException {
-        for (Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
-            String pseudo = entry.getKey();
-            DataOutputStream output = entry.getValue();
-            System.out.println("Message envoyé au client " + pseudo);
-            String finalPseudo = messagePseudo;
-            if (pseudo.equals(messagePseudo)) {
-                // If the current client is the one who wrote the message we display "Moi" instead of the client pseudo
-                finalPseudo = "Moi";
-            }
-            output.writeUTF(finalPseudo + ":");
-            output.writeUTF(message);
-        }
-    }
-
-    /**
-     * Function to send a message to inform the clients in the connectedClients array
-     * that a new client has joined the chat.
-     *
-     * @param newPseudo The pseudo of the newly added client.
-     * @throws IOException If an I/O problem occurs while sending the message.
-     */
-    protected static void sendArrivalMessageToClients(String newPseudo) throws IOException {
-        for (Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
-            // Getting the pseudo (key of the hashtable)
-            String pseudo = entry.getKey();
-
-            //If statement that prevents from displaying the arrival message to the new client
-            if (!newPseudo.equals(pseudo)) {
-
-                // Getting the outputstream (value of the hashtable)
-                DataOutputStream output = entry.getValue();
-
-                // NewPseudo and arrival message are written separately to the server's output stream
-                output.writeUTF(newPseudo);
-                output.writeUTF("a rejoint la conversation. ");
-
-            }
-        }
-    }
-
-    /**
-     * Function to send a message to inform the clients still connected to the chat
-     * that one client has left the chat.
-     *
-     * @param message The message to send to clients contained in the connectedClients array.
-     * @param disconnectingPseudo The pseudo of the client who is leaving the chat.
-     * @throws IOException If an I/O problem occurs while sending the message.
-     */
-    protected static void sendDisconnectionMessageToClients(String message, String disconnectingPseudo) throws IOException {
-        for (Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
-
-            // Getting the pseudo (key of the hashtable)
-            String pseudo = entry.getKey();
-            // Getting the outputstream (value of the hashtable)
-            DataOutputStream output = entry.getValue();
-
-            //If the client is the one who disconnects we don't display the disconnection message
-            if (!pseudo.equals(disconnectingPseudo)) {
-
-                // DisconnectingPseudo and arrival message are written separately to the server's output stream
-                output.writeUTF(disconnectingPseudo);
                 output.writeUTF(message);
             }
         }
@@ -200,7 +124,6 @@ public class Server {
                 // Create a DataInputStream to read text input and a DataOutputStream to write text output
 //                DataInputStream input = new DataInputStream(newClient.getInputStream());
 //                DataOutputStream output = new DataOutputStream(newClient.getOutputStream());
-
 
                 ServerMessageReceptor thread = new ServerMessageReceptor(newClient);
                 thread.start();

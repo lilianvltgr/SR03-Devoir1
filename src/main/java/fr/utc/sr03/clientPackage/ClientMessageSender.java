@@ -42,15 +42,16 @@ public class ClientMessageSender extends Thread {
                 // Read the line typed by the user
                 String message = sc.nextLine();
 
+                // if the message written equals "exit", the connection between
+                // the server and this client is no longer active
+                if ("exit".equalsIgnoreCase(message.trim())) {
+                    Client.activeConnection = false;
+                    message = "exit";
+                }
+
                 // The message entered by the user is written to the output stream along with his pseudo
                 output.writeUTF(pseudo);
                 output.writeUTF(message);
-
-                // if the message written equals "exit", the connection between
-                // the server and this client is no longer active
-                if (message.equals("exit")) {
-                    Client.activeConnection = false;
-                }
             }
         } catch (IOException e) {
             if (Client.activeConnection)

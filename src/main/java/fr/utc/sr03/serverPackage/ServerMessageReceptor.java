@@ -46,11 +46,10 @@ public class ServerMessageReceptor extends Thread {
 //                }
             //While the pseudo entered by the user already exists, prompt the user to enter it again
             while (Server.isExisting(pseudo)) {
-                // The server send "false" to the client beacause the pseudo is used already
+                // The server send "false" to the client because the pseudo is used already
                 output.writeBoolean(false);
                 pseudo = input.readUTF();
             }
-            //TODO mettre la création du pseudo dans une fonction + thread pour les connexions simultanées
             output.writeBoolean(true);
 
             // The pseudo is added to the connectedClients array.
@@ -58,7 +57,6 @@ public class ServerMessageReceptor extends Thread {
 
             // A message is sent to the other client already connected to inform them about this arrival
             Server.sendMessageToClients("a rejoint la conversation.", pseudo);
-
 
             while (activeConnection) {
                 // Reads pseudo of the client and the message just sent.
