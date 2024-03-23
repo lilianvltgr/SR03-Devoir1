@@ -68,7 +68,7 @@ public class Client {
                 /* while the communication is active, the main program waits */
             }
             // Process of disconnection; closes the communication socket after 2 seconds
-            System.out.println("Déconnection en cours");
+            System.out.println("Déconnexion en cours");
         } catch (IOException e) {
             activeConnection = false;
             System.out.println("Le serveur a un problème, retentez de vous connecter plus tard");
@@ -79,6 +79,8 @@ public class Client {
             } catch (Exception ex) {
                 // if the closing does not work the program finishes
             }
+            // We ensure that all the threads and sockets are closed at the end of the program
+            System.exit(0);
         }
     }
 }

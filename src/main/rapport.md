@@ -71,7 +71,7 @@ et les clients seront notifiés lors de l'arrivée ou le départ d'un client.
         - Un attribut booléen qui indique si la connection au serveur est active ou non.
     - La classe `Client` ne possède pas de méthodes particulières si ce n'est le `main`.
 
-**Les deux classes présentées ci-dessus utilisent des Threads afin d'effectuer des executions en parallèle**
+**Les deux classes présentées ci-dessus utilisent des Threads afin d'effectuer des executions en parallèle.**
 Les threads ont été redéfinis dans des classes qui sont spécifiques à leur utilisation. Chacune de ces classes hérite de
 la classe mère thread et possède une surcharge de la methode run() qui est appelée lors du lancement du thread.
 
@@ -80,86 +80,156 @@ Pour chaque connection client/serveur, trois threads sont mis en place :
 - Un premier thread est généré côté serveur afin de réceptionner les messages envoyé par un client qui lui est attribué.
   Il y a donc un thread de reception par client.
   Le thread est défini dans la classe `ServerMessageReceptor`.
-- Un deuxième permet l'envoi de messages (lus sur le terminal) au serveur
+- Un deuxième permet l'envoi de messages (lus sur le terminal) au serveur.
   Le thread est défini dans la classe `ClientMessageSender`.
 - Un troisième permet la reception des messages du serveur au client. Ces messages comprennent ceux envoyés par les
   autres clients.
   Le thread est défini dans la classe `ClientMessageReceptor`.
 
 ![](C:\Users\lv230\IdeaProjects\SR03-Devoir1\src\main\SR03Devoir1.png)
-_Expliquer et justifier votre conception et le développement (ex. Le choix des
-structures des données JAVA, surcharges des méthodes). Vous pouvez vous appuyer sur
-des bouts de code et des schémas._
+
+
+### Méthodes principales
+
+Nous avons choisi de ne pas développer l'explication de l'ensemble de nos méthodes mais de simplement expliquer brièvement leur utilité au sein de leur classe.
+Pour plus d'informations quand aux spécificités d'une fonction, veuillez regarder la JAVADOC et les commentaires dans le corps de la fonction.
+#### Méthodes de `Server`
+
+>`boolean isExisting(String pseudo)`
+> 
+> Cette fonction nous permet de savoir si un pseudo est déjà présent dans la table de hachage `connectedClients` contenant tous les pseudos connectés à l'application, et ainsi garantir l'unicité du pseudo.
+
+>`void addToConnectedClients(String pseudo, DataOutputStream outputClient)`
+> &
+>`void removeFromConnectedClients(String pseudo)`
+> 
+> Nous avons choisi de surcharger les fonctions de manipulation de la table de hachage `connectedClients`, afin d'intégrer des données métier à notre application, telles que le nombre de pseudonymes présents dans la table, indiquant ainsi le nombre de clients connectés.
+
+
+>`void sendMessageToClients(String message, String pseudo)`
+>
+> Notre décision a été de mettre en place une fonction commune pour tous les types de messages envoyés à l'ensemble des clients. 
+> Par conséquent, qu'il s'agisse d'un message devant être retransmis ou simplement informatif (comme une notification de nouvelle connexion ou de déconnexion), il sera transmis grâce à cette méthode.
+
+### Utilisation d'une variable pour connaitre l'état de la connection
+
+Dans les classes principales, une variable booléenne `activeConnection` a été ajoutée afin de connaitre l'état de la connexion
+entre le serveur et le client. Si la variable est à false la connection n'est plus active, sinon la connection
+est active et la variable est à true. Utiliser une variable comme ceci permet aux threads de sortir de se terminer sans
+qu'il y ait
+d'erreur. En effet, le programme principal attend que les threads se terminent avant de supprimer la socket de connexion pour
+éviter les erreurs.
+
 
 ### Langues utilisées
+
+Nous avons choisi d'employer l'anglais pour définir nos méthodes, nos classes, ainsi que les messages destinés au serveur. 
+Cette décision s'appuie sur le fait que l'anglais est la langue dominante dans le domaine de la programmation et de l'informatique, ce qui facilite la compréhension et la collaboration pour un large panel de développeurs. 
+De plus, cela rendrait notre projet plus accessible à une communauté internationale en cas de réutilisation. 
+Néanmoins, étant donné que notre application cible principalement les utilisateurs francophones pour le moment, nous avons décidé d'utiliser le français pour les messages destinés au `Client` et pour l'interface générale du `Client`.
+
 
 ## Scénarios d'utilisation
 
 ### Récupérer et lancer l'application
-Expliquer comment récupérer (ex. code sur git avec un commit),
-installer et lancer votre application.
+
+#### Récupérer l'application
+
+Pour visualiser le projet sur Github, rendez-vous sur le lien suivant :
+> https://github.com/lilianvltgr/SR03-Devoir1
+
+Pour ensuite cloner le projet, rendez vous sur Code > Local > Clone
+
+![Capture d’écran 2024-03-23 à 18.42.17.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2Fxg%2F8fz57x4n1hl8gjmsbfgq2pg80000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_w6IVud%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2018.42.17.png)
+
+Choisissez le lien HTTPS (donné également ci-dessous).
+
+> https://github.com/lilianvltgr/SR03-Devoir1.git
+
+Sur votre IDE :
+Choisissez de créer un projet avec VCS et collez le lien donné ci-dessus.
+
+A présent, suivez les instructions de votre IDE et le projet devrait se cloner correctement.
+
+
+#### Lancer l'application
+
+Pour lancer l'application, il est nécessaire de créer une Configuration (généralement en haut à droite dans votre IDE).
+
+![Capture d’écran 2024-03-23 à 19.08.19.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2Fxg%2F8fz57x4n1hl8gjmsbfgq2pg80000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_QrYJ7X%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2019.08.19.png)
+
+Créez une configuration `ClientConfiguration` qui utilise le fichier `Client` (fr.utc.sr03.clientPackage.Client sur l'image ci-dessus).
+
+A présent, cliquer sur le fichier `Server` et lancer la configuration normalement automatique Current File.
+Le serveur est ainsi lancé.
+Maintenant, cliquez sur la configuration `ClientConfiguration` et lancez là autant de fois que vous voulez de clients. 
+Par exemple si vous voulez 4 clients, il est nécessaire de lancer 4 fois la configuration `ClientConfiguration`.
+
+A ce stade, vous pouvez normalement utiliser l'application en suivant les instructions sur la console de `ClientConfiguration`.
 
 ### Cas d'utilisations pratiques
 
-Montrer tous les cas d’utilisations pratiques (via votre application sous forme d’un démonstrateur)
-
 #### Démarrer le chat
 
-Afin de démarrer le chat, il faut tout d'abord lancer la classe `Server` puis lancer la classe `Client`.
-Il sera demandé sur le terminal du client, d'entrer un pseudo. Ensuite, celui-ci sera connecté au fil de discussion.
+Afin de démarrer le chat, il faut ainsi lancer la classe `Server` puis lancer la configuration créée normalement précédemment `ClientConfiguration`.
+Il sera demandé sur le terminal du client d'entrer un pseudo. Ensuite, celui-ci sera connecté au fil de discussion.
+
+![Capture d’écran 2024-03-23 à 19.14.14.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2FDesktop%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2019.14.14.png)
 
 #### Ajouter des utilisateurs
 
-Pour ajouter un utilisateur il suffit de relancer un instance de la classe Client. Celui-ci se connectera aprés
-avoir choisi un pseudo
+Pour ajouter un utilisateur il suffit de relancer la configuration `ClientConfiguration`. 
+Celui-ci sera connecté après avoir choisi un pseudo.
+
+![Capture d’écran 2024-03-23 à 19.15.00.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2FDesktop%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2019.15.00.png)
 
 #### Démarrer la discussion
 
 Aprés la connection, le client peut écrire un message sur le terminal qui sera envoyé à tous les utilisateurs.
 De même, il recevra les messages écrit par les autres clients.
 
+![Capture d’écran 2024-03-23 à 19.15.34.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2FDesktop%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2019.15.34.png)
+![Capture d’écran 2024-03-23 à 19.15.53.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2FDesktop%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2019.15.53.png)
+
 #### Quitter le chat
 
-Pour quitter le chat, il faut que le client tape "exit". La déconnection s'effectuera et les autres clients seront
+Pour quitter le chat, il suffit que le client tape "exit". La déconnexion s'effectuera et les autres clients seront
 notifiés.
 
+![Capture d’écran 2024-03-23 à 19.17.08.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2FDesktop%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2019.17.08.png)
+![Capture d’écran 2024-03-24 à 00.11.32.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2FDesktop%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-24%20%C3%A0%2000.11.32.png)
+
 ### Cas particuliers
-
-#### Départ brutal
-
-Si un client, tente de se connecter avant que le server ne tourne, un message informant
-que le serveur a un problème sera renvoyé au client et son programme se terminera.
 
 #### Client interrompu
 
 Si le client a un problème, les autres utilisateurs seront notifiés et le serveur supprimera le client de sa base de
 données.
 
+![Capture d’écran 2024-03-23 à 19.20.47.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2FDesktop%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2019.20.47.png)
+
+#### Connexion échouée
+
+Si un client, tente de se connecter avant que le server ne tourne, un message informant
+que le serveur a un problème sera renvoyé au client et son programme se terminera.
+
+![Capture d’écran 2024-03-23 à 19.33.03.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2Fxg%2F8fz57x4n1hl8gjmsbfgq2pg80000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_UMiYcl%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2019.33.03.png)
+
 #### Serveur interrompu
 
 Si le serveur est interrompu, les clients sont notifiés et sont déconnectés.
 
-# Trucs lambdas à ajouter qq part :
+![Capture d’écran 2024-03-24 à 00.13.58.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2FDesktop%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-24%20%C3%A0%2000.13.58.png)
+
+## Futures Améliorations
+
 
 ### Traitement des exceptions
 
-Les exceptions connues et voulues (comme la fermeture de certains sockets liés à la déconnection) sont traitées de façon
-à éviter un arret total du programme.
-De plus les clients et le serveur sont notifiés quand cela est necessaire.
+Les exceptions connues et anticipées, telles que la fermeture de certains sockets lors d'une déconnexion, sont gérées de manière à prévenir un arrêt total du programme. 
+De plus, les clients et le serveur sont notifiés lorsque cela est nécessaire. 
+Nous avons traité au mieux les exceptions en fonction de nos connaissances actuelles, en utilisant les exceptions déjà disponibles en Java. 
+Cependant, pour la suite de notre application, il sera sans doute préférable de créer nos propres exceptions pour une gestion plus spécifique et précise.
 
-PARLER DE LA MAJ DES EXCEPTIONS VERS DES VRAIES CLASSES PLUS TARD ???
 
-### Utilisation d'une variable pour connaitre l'état de la connection
-
-Dans les classes principales, une variable booléenne a été ajoutée afin de connaitre l'état de connection
-entre le serveur et le client. Si la variable est à false la connection n'est plus active, sinon la connection
-est active et la variable est à true. Utiliser une variable comme ceci permet aux threads de sortir de se terminer sans
-qu'il y ait
-d'erreur. En effet, le programme principal attend que les threads se terminent avant de supprimer la connection pour
-éviter les erreurs.
-
-Questions du prof :
-• Comment garantir qu’un pseudonyme est unique ? Implémenter la solution proposée.
-• Comment vous faites pour gérer le cas d’une déconnexion de client sans que le serveur
-soit prévenu et vice-versa ? Implémenter la solution proposée.
 
