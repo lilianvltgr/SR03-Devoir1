@@ -40,8 +40,6 @@ eux comme au sein d'un groupe de discussion. Il devra être possible de choisir 
 client communique
 et les clients seront notifiés lors de l'arrivée ou le départ d'un client.
 
-### Cas d'utilisation
-
 
 ## Conception et Développement
 
@@ -55,14 +53,14 @@ et les clients seront notifiés lors de l'arrivée ou le départ d'un client.
         - Un ServerSocket qui permet aux clients de se connecter au serveur
         - Un Socket qui correspond au socket du client qui se connecte au serveur
         - Un entier qui sert de compteur pour le nombre de clients connectés
-        - Un dictionnaire qui regroupe les pseudos des clients actuellement connectés ainsi que leur canal de sortie qui
+        - Une HashMap connectedClients qui regroupe les pseudos des clients actuellement connectés ainsi que leur canal de sortie qui
           sert à leur envoyer des informations
 
     - La classe `Server` possède plusieurs méthodes :
         - isExisting permet de savoir si un pseudo existe parmi les pseudos actuellement utilisés ou non. Elle retourne
           donc un booléen et prend un pseudo en argument
-        - addToConnectedClients permet d’ajouter un client au dictionnaire
-        - removeFromConnectedClients permet de supprimer un client du dictionnaire
+        - addToConnectedClients permet d’ajouter un client à la HashMap connectedClients
+        - removeFromConnectedClients permet de supprimer un client de la HashMap connectedClients
         - sendMessagesToClients permet d’envoyer des messages à tous les clients connectés et notamment les messages de
           connexion et de déconnexion
 
@@ -98,13 +96,13 @@ Pour plus d'informations quand aux spécificités d'une fonction, veuillez regar
 
 >`boolean isExisting(String pseudo)`
 > 
-> Cette fonction nous permet de savoir si un pseudo est déjà présent dans la table de hachage `connectedClients` contenant tous les pseudos connectés à l'application, et ainsi garantir l'unicité du pseudo.
+> Cette fonction nous permet de savoir si un pseudo est déjà présent dans la HashMap `connectedClients` contenant tous les pseudos connectés à l'application, et ainsi garantir l'unicité du pseudo.
 
 >`void addToConnectedClients(String pseudo, DataOutputStream outputClient)`
 > &
 >`void removeFromConnectedClients(String pseudo)`
 > 
-> Nous avons choisi de surcharger les fonctions de manipulation de la table de hachage `connectedClients`, afin d'intégrer des données métier à notre application, telles que le nombre de pseudonymes présents dans la table, indiquant ainsi le nombre de clients connectés.
+> Nous avons choisi de surcharger les fonctions de manipulation de la HashMap `connectedClients`, afin d'intégrer des données métier à notre application, telles que le nombre de pseudonymes présents dans la table, indiquant ainsi le nombre de clients connectés.
 
 >`void sendMessageToClients(String message, String pseudo)`
 >
@@ -150,13 +148,13 @@ si le thread ne se finit pas alors qu'il le devrait, on le ferme avec le program
 Nous avons choisi d'employer l'anglais pour définir nos méthodes, nos classes, ainsi que les messages destinés au serveur. 
 Cette décision s'appuie sur le fait que l'anglais est la langue dominante dans le domaine de la programmation et de l'informatique, ce qui facilite la compréhension et la collaboration pour un large panel de développeurs. 
 De plus, cela rendrait notre projet plus accessible à une communauté internationale en cas de réutilisation. 
-Néanmoins, étant donné que notre application cible principalement les utilisateurs francophones pour le moment, nous avons décidé d'utiliser le français pour les messages destinés au `Client` et pour l'interface générale du `Client`.
+Néanmoins, étant donné que notre application cible principalement les utilisateurs francophones pour le moment, nous avons décidé d'utiliser le français pour les messages destinés au client et pour l'interface générale du `Client`.
 
 ### Unicité des pseudos
 
 Afin de garantir qu'un pseudo est unique, une méthode `boolean isExisting(String pseudo)` au sein du serveur permet
 d'effectuer une vérification.
-Elle parcourt le dictionnaire `connectedClients` et vérifie que le pseudo entré n'est pas déjà présent.
+Elle parcourt la HashMap `connectedClients` et vérifie que le pseudo entré n'est pas déjà présent.
 De cette façon si un pseudo est déjà utilisé, le serveur pourra notifier le client pour qu'il en choisisse un autre,
 jusqu'à ce qu'il choisisse un pseudo unique
 
@@ -193,7 +191,7 @@ Créez une configuration `ClientConfiguration` qui utilise le fichier `Client` (
 l'image ci-dessus)
 et autorisez les instances multiples dans les options.
 À présent, créez de la même façon une configuration `ServerConfiguration` qui utilise le fichier `Server` (
-fr.utc.sr03.clientPackage.Server) et lancez-la.
+fr.utc.sr03.clientPackage.Server) **!! sans autoriser les instances multiples !!** et lancez-la.
 Le serveur est ainsi lancé.
 Maintenant, cliquez sur la configuration `ClientConfiguration` et lancez là autant de fois que vous voulez de clients. 
 Par exemple si vous voulez 4 clients, il est nécessaire de lancer 4 fois la configuration `ClientConfiguration`.
@@ -205,11 +203,10 @@ de `ClientConfiguration`.
 
 #### Démarrer le chat
 
-Afin de démarrer le chat, il faut ainsi lancer la classe `Server` puis lancer la configuration créée normalement précédemment `ClientConfiguration`.
+Afin de démarrer le chat, il faut ainsi lancer les configurations créées normalement précédemment ; `ServerConfiguration` **puis** `ClientConfiguration`.
 Il sera demandé sur le terminal du client d'entrer un pseudo. Ensuite, celui-ci sera connecté au fil de discussion.
 
-![](images/EntreePseudoClient.png)
-![](images/ConnectedClient.png)
+![](images/ClientConnection.png)
 
 #### Ajouter des utilisateurs
 
@@ -220,10 +217,9 @@ Celui-ci sera connecté après avoir choisi un pseudo.
 
 #### Démarrer la discussion
 
-Aprés la connexion, le client peut écrire un message sur le terminal qui sera envoyé à tous les utilisateurs.
+Après la connexion, le client peut écrire un message sur le terminal qui sera envoyé à tous les utilisateurs.
 De même, il recevra les messages écrit par les autres clients.
 
-![](images/ConversationStart.png)
 ![](images/Conversation.png)
 
 #### Quitter le chat
@@ -254,7 +250,7 @@ que le serveur a un problème sera renvoyé au client et son programme se termin
 
 Si le serveur est interrompu, les clients sont notifiés et sont déconnectés.
 
-![](images/ServorError.png)
+![](images/ServerError.png)
 
 ## Futures Améliorations
 
