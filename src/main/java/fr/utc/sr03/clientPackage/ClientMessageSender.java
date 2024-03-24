@@ -13,12 +13,11 @@ import java.util.Scanner;
  */
 
 public class ClientMessageSender extends Thread {
-    public Socket communication;
+
     private String pseudo;
 
     //constructor
-    public ClientMessageSender(Socket communication, String pseudo) {
-        this.communication = communication;
+    public ClientMessageSender(String pseudo) {
         this.pseudo = pseudo;
     }
 
@@ -35,9 +34,9 @@ public class ClientMessageSender extends Thread {
             Scanner sc = new Scanner(System.in);
 
             // Create a DataOutputStream to write text output to the server's communication socket
-            DataOutputStream output = new DataOutputStream(communication.getOutputStream());
+            DataOutputStream output = new DataOutputStream(Client.communication.getOutputStream());
 
-            // While the connection between the server and the client is indeed active
+            // While the connection between the server and the client are indeed active
             while (Client.activeConnection) {
 
                 // Read the line typed by the user

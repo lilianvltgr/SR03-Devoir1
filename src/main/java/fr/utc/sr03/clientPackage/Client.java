@@ -16,7 +16,7 @@ import static java.lang.Thread.sleep;
  */
 
 public class Client {
-    static public Socket communication;
+    protected static Socket communication;
     static volatile boolean activeConnection = true;
 
     public static void main(String[] args) {
@@ -54,18 +54,17 @@ public class Client {
                 output.writeUTF(pseudo);
             }
 
-
             // Confirmation message to inform the newly connected client that he entered the chat
             System.out.println("Vous êtes connectés ! Tapez du texte et appuyez sur entrée pour envoyer un message, ou tapez exit pour quitter.");
 
             // Create a new message sender thread and start it.
             // This thread is responsible for sending messages to the server using the communication channel.
-            threadMessageSender = new ClientMessageSender(communication, pseudo);
+            threadMessageSender = new ClientMessageSender(pseudo);
             threadMessageSender.start();
 
             // Create a new message receptor thread and start it.
             // This thread is responsible for receiving messages from the server using the communication channel.
-            threadMessageReceptor = new ClientMessageReceptor(communication);
+            threadMessageReceptor = new ClientMessageReceptor();
             threadMessageReceptor.start();
 
             while (activeConnection) {
@@ -93,4 +92,5 @@ public class Client {
             }
         }
     }
+
 }

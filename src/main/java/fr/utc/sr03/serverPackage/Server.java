@@ -15,8 +15,8 @@ import java.util.*;
  */
 
 public class Server {
-    static public ServerSocket connection;
-    public static Socket newClient;
+    protected static ServerSocket connection;
+    protected static Socket newClient;
 
     // counter of pseudos currently connected
     public static int nbPseudosConnectes;
@@ -81,9 +81,8 @@ public class Server {
         for (Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
             // Getting the entryPseudo (key of the hashtable)
             String entryPseudo = entry.getKey();
-            // Getting the outputstream (value of the hashtable)
+            // Getting the output stream (value of the hashtable)
             DataOutputStream output = entry.getValue();
-            System.out.println("Message send to " + entryPseudo);
 
             // If the message is informative : arrival or disconnection of a client
             if (message.equals("a rejoint la conversation.") || message.equals("a quitté la conversation de façon imprévue.") || message.equals("a quitté la conversation.")){
@@ -124,9 +123,6 @@ public class Server {
                 newClient = connection.accept();
 
                 // Create a DataInputStream to read text input and a DataOutputStream to write text output
-//                DataInputStream input = new DataInputStream(newClient.getInputStream());
-//                DataOutputStream output = new DataOutputStream(newClient.getOutputStream());
-
                 ServerMessageReceptor thread = new ServerMessageReceptor(newClient);
                 thread.start();
             } catch (Exception e) {

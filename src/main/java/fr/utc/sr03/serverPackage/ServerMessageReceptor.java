@@ -12,10 +12,9 @@ import java.net.Socket;
  */
 
 public class ServerMessageReceptor extends Thread {
-    private Socket client;
+    private final Socket client;
     private String pseudo;
 
-    //TODO voir l'interet de mettre les attributs en final
     public ServerMessageReceptor(Socket client) {
         this.client = client;
         this.pseudo = "";
@@ -35,15 +34,8 @@ public class ServerMessageReceptor extends Thread {
             DataInputStream input = new DataInputStream(client.getInputStream());
             DataOutputStream output = new DataOutputStream(client.getOutputStream());
             // New pseudo is read
-
             pseudo = input.readUTF();
 
-            // Case where a new message is sent from a client to the server
-//                if (pseudo.equals("envoiMessage")) {
-//                    String messagePseudo = input.readUTF();
-//                    String message = input.readUTF();
-//                    sendMessagesToClients(message, messagePseudo);
-//                }
             //While the pseudo entered by the user already exists, prompt the user to enter it again
             while (Server.isExisting(pseudo)) {
                 // The server send "false" to the client because the pseudo is used already
@@ -74,22 +66,18 @@ public class ServerMessageReceptor extends Thread {
 
                     // The connection between the server and this client is no longer active
                     activeConnection = false;
-                    System.out.println("Connexion active  : " + activeConnection);
+
 
                 } else {
                     // The message is well received
-                    System.out.println("message : " + message);
+                    System.out.println("message : " + message + "received");
 
                     // The message is broadcasted to every client currently connected
                     Server.sendMessageToClients(message, pseudo);
-
-                    // The connection between the server and this client is still active
-                    System.out.println("Connexion active  : " + activeConnection);
                 }
             }
         } catch (IOException e) {
             if (!pseudo.isEmpty() && activeConnection) {
-                System.out.println(client.isClosed());
                 try {
                     Server.removeFromConnectedClients(pseudo);
                     Server.sendMessageToClients("a quitté la conversation de façon imprévue.", pseudo);
@@ -103,7 +91,7 @@ public class ServerMessageReceptor extends Thread {
                 client.close();
         } catch (IOException exc) {
             // Nothing is done
-            System.out.println("Erreur en fermant le socket"); // affiche le message sur la console
+            System.out.println("Error while closing the socket"); // affiche le message sur la console
         }
     }
 }

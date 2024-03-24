@@ -11,17 +11,6 @@ import java.net.Socket;
 
 public class ClientMessageReceptor extends Thread {
 
-    public Socket communication;
-    //TODO Réflechir au passage en private
-    /**
-     * Constructor
-     *
-     * @param communication The socket that allows a communication
-     */
-    public ClientMessageReceptor(Socket communication) {
-        this.communication = communication;
-    }
-
     @Override
     /**
      * Method to run the communication thread for receiving messages from the server.
@@ -31,7 +20,7 @@ public class ClientMessageReceptor extends Thread {
     public void run() {
         try {
             // Create a DataInputStream to read input from the server's communication socket
-            DataInputStream input = new DataInputStream(communication.getInputStream());
+            DataInputStream input = new DataInputStream(Client.communication.getInputStream());
 
             // While the connection between the server and this client is indeed active
             while (Client.activeConnection) {
