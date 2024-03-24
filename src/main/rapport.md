@@ -86,7 +86,7 @@ Pour chaque connection client/serveur, trois threads sont mis en place :
   autres clients.
   Le thread est défini dans la classe `ClientMessageReceptor`.
 
-![](C:\Users\lv230\IdeaProjects\SR03-Devoir1\src\main\SR03Devoir1.png)
+![](\SR03Devoir1.png)
 
 
 ### Méthodes principales
@@ -105,21 +105,43 @@ Pour plus d'informations quand aux spécificités d'une fonction, veuillez regar
 > 
 > Nous avons choisi de surcharger les fonctions de manipulation de la table de hachage `connectedClients`, afin d'intégrer des données métier à notre application, telles que le nombre de pseudonymes présents dans la table, indiquant ainsi le nombre de clients connectés.
 
-
 >`void sendMessageToClients(String message, String pseudo)`
 >
 > Notre décision a été de mettre en place une fonction commune pour tous les types de messages envoyés à l'ensemble des clients. 
 > Par conséquent, qu'il s'agisse d'un message devant être retransmis ou simplement informatif (comme une notification de nouvelle connexion ou de déconnexion), il sera transmis grâce à cette méthode.
 
-### Utilisation d'une variable pour connaitre l'état de la connection
+### Gestion de l'arrêt des programmes
+
+#### Utilisation d'une variable pour connaître l'état de la connection
 
 Dans les classes principales, une variable booléenne `activeConnection` a été ajoutée afin de connaitre l'état de la connexion
 entre le serveur et le client. Si la variable est à false la connection n'est plus active, sinon la connection
 est active et la variable est à true. Utiliser une variable comme ceci permet aux threads de sortir de se terminer sans
-qu'il y ait
-d'erreur. En effet, le programme principal attend que les threads se terminent avant de supprimer la socket de connexion pour
-éviter les erreurs.
+qu'il y ait d'erreur. En effet, le programme principal attend que les threads se terminent avant de supprimer le socket
+de connexion pour éviter les erreurs.
 
+#### Traitement des exceptions
+
+Dans certains cas, une variable d'état de connection ne suffit pas. En effet, lorsque le programme est en attente d'une
+entrée sur le terminal par exemple, il n'y a pas de vérification de la variable et une exception est renvoyée aprés la
+lecture.
+Nous avons donc étudié les possibilités d'exceptions et traités les différents cas afin que les programmes se comportent
+de la meilleure façon possible :
+
+- Dans le cas d'une fermeture de connection (passage de la variable d'état à false)
+- Lors de la fermeture imprévue d'un client
+- Lors de la fermeture imprévue du serveur
+  Le programme peut donc soit s'arrêter aprés la récupération de l'exception, en envoyant les informations nécessaires,
+  soit reprendre son fonctionnement normal (cas du serveur)
+
+#### Fermeture avec `System.exit(0)`
+
+Pour le cas particulier de la fermeture imprévue du serveur, le client peut être bloqué dans l'attente d'un message avec
+le scanner permettant de lire le terminal.
+Ce cas particulier concerne spécifiquement le `ClientMessageSender` qui lit le message. Afin d'éviter que le client soit
+obligé d'écrire un message pour se faire
+déconnecter, une boucle de vérification de l'état du thread et une fermeture du programme ont été mises en place. Ainsi
+si le thread ne se finit pas alors qu'il le devrait, on le ferme avec le programme.
 
 ### Langues utilisées
 
@@ -128,6 +150,13 @@ Cette décision s'appuie sur le fait que l'anglais est la langue dominante dans 
 De plus, cela rendrait notre projet plus accessible à une communauté internationale en cas de réutilisation. 
 Néanmoins, étant donné que notre application cible principalement les utilisateurs francophones pour le moment, nous avons décidé d'utiliser le français pour les messages destinés au `Client` et pour l'interface générale du `Client`.
 
+### Unicité des pseudos
+
+Afin de garantir qu'un pseudo est unique, une méthode `boolean isExisting(String pseudo)` au sein du serveur permet
+d'effectuer une vérification.
+Elle parcourt le dictionnaire `connectedClients` et vérifie que le pseudo entré n'est pas déjà présent.
+De cette façon si un pseudo est déjà utilisé, le serveur pourra notifier le client pour qu'il en choisisse un autre,
+jusqu'à ce qu'il choisisse un pseudo unique
 
 ## Scénarios d'utilisation
 
@@ -138,7 +167,7 @@ Néanmoins, étant donné que notre application cible principalement les utilisa
 Pour visualiser le projet sur Github, rendez-vous sur le lien suivant :
 > https://github.com/lilianvltgr/SR03-Devoir1
 
-Pour ensuite cloner le projet, rendez vous sur Code > Local > Clone
+Pour ensuite cloner le projet, rendez-vous sur Code > Local > Clone
 
 ![Capture d’écran 2024-03-23 à 18.42.17.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2Fxg%2F8fz57x4n1hl8gjmsbfgq2pg80000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_w6IVud%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2018.42.17.png)
 
@@ -158,14 +187,17 @@ Pour lancer l'application, il est nécessaire de créer une Configuration (gén�
 
 ![Capture d’écran 2024-03-23 à 19.08.19.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2Fxg%2F8fz57x4n1hl8gjmsbfgq2pg80000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_QrYJ7X%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2019.08.19.png)
 
-Créez une configuration `ClientConfiguration` qui utilise le fichier `Client` (fr.utc.sr03.clientPackage.Client sur l'image ci-dessus).
-
-A présent, cliquer sur le fichier `Server` et lancer la configuration normalement automatique Current File.
+Créez une configuration `ClientConfiguration` qui utilise le fichier `Client` (fr.utc.sr03.clientPackage.Client sur
+l'image ci-dessus)
+et authorisez les instances multiples dans les options.
+À présent, créez de la même façon une configuration `ServerConfiguration` qui utilise le fichier `Server` (
+fr.utc.sr03.clientPackage.Server) et lancez la.
 Le serveur est ainsi lancé.
 Maintenant, cliquez sur la configuration `ClientConfiguration` et lancez là autant de fois que vous voulez de clients. 
 Par exemple si vous voulez 4 clients, il est nécessaire de lancer 4 fois la configuration `ClientConfiguration`.
 
-A ce stade, vous pouvez normalement utiliser l'application en suivant les instructions sur la console de `ClientConfiguration`.
+À ce stade, vous pouvez normalement utiliser l'application en suivant les instructions sur la console
+de `ClientConfiguration`.
 
 ### Cas d'utilisations pratiques
 
@@ -222,7 +254,6 @@ Si le serveur est interrompu, les clients sont notifiés et sont déconnectés.
 ![Capture d’écran 2024-03-24 à 00.13.58.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2FDesktop%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-24%20%C3%A0%2000.13.58.png)
 
 ## Futures Améliorations
-
 
 ### Traitement des exceptions
 
