@@ -1,5 +1,8 @@
 # Rapport Devoir 1
 
+Voltigeur Lilian
+Chesnay Zoé
+
 ## Contexte
 
 Dans le cadre de l'UV SR03 (Architecture des applications Internet),
@@ -19,16 +22,15 @@ discussion publique entre un ensemble de participants.
 
 ### Concepts utilisés
 
-- Afin d'effectuer un communication client/Serveur, les sockets sont utilisés.
+- Afin d'effectuer une communication client/Serveur, les sockets sont utilisés.
 - La programmation objet, au coeur de cette application sera le paradigme utilisé
     - Il sera possible de retrouver l'utilisation de l'héritage et la surcharge de certaines méthodes
-    - Chaque classe joue sont rôle (Client, Server, threads de communication) joue sont rôle et communique avec les
+  - Chaque classe joue son rôle (Client, Server, threads de communication) et communique avec les
       autres classes
     - JAVA sera le langage orienté objet utilisé pour cette application notamment car il possède un ensemble de classes
       permettant l'utilisation et la gestion des sockets
 - Le multi-threading sera utilisé. Il permet de lancer un ensemble de threads, processus fils executables simultanément
-  au sein d'un programme unique. C'est grâce à ce concept que plusieurs clients pourront se connecter et communiquer
-  ensemble.
+  au sein d'un programme unique. C'est grâce à ce concept que plusieurs clients pourront se connecter et communiquer.
 
 ### Objectifs fixés
 
@@ -62,20 +64,20 @@ et les clients seront notifiés lors de l'arrivée ou le départ d'un client.
         - addToConnectedClients permet d’ajouter un client au dictionnaire
         - removeFromConnectedClients permet de supprimer un client du dictionnaire
         - sendMessagesToClients permet d’envoyer des messages à tous les clients connectés et notamment les messages de
-          connection et de déconnection
+          connexion et de déconnexion
 
 2. La classe `Client` permet de se connecter au `Server`, d'envoyer ainsi que de recevoir les messages des autres
    clients connectés.
     - La classe `Client` possède plusieurs attributs :
         - Un Socket qui permet la communication avec le serveur.
-        - Un attribut booléen qui indique si la connection au serveur est active ou non.
+      - Un attribut booléen qui indique si la connexion au serveur est active ou non.
     - La classe `Client` ne possède pas de méthodes particulières si ce n'est le `main`.
 
 **Les deux classes présentées ci-dessus utilisent des Threads afin d'effectuer des executions en parallèle.**
 Les threads ont été redéfinis dans des classes qui sont spécifiques à leur utilisation. Chacune de ces classes hérite de
 la classe mère thread et possède une surcharge de la methode run() qui est appelée lors du lancement du thread.
 
-Pour chaque connection client/serveur, trois threads sont mis en place :
+Pour chaque connexion client/serveur, trois threads sont mis en place :
 
 - Un premier thread est généré côté serveur afin de réceptionner les messages envoyé par un client qui lui est attribué.
   Il y a donc un thread de reception par client.
@@ -87,8 +89,6 @@ Pour chaque connection client/serveur, trois threads sont mis en place :
   Le thread est défini dans la classe `ClientMessageReceptor`.
 
 ![](images/Sketch.png)
-
-
 
 ### Méthodes principales
 
@@ -113,23 +113,24 @@ Pour plus d'informations quand aux spécificités d'une fonction, veuillez regar
 
 ### Gestion de l'arrêt des programmes
 
-#### Utilisation d'une variable pour connaître l'état de la connection
+#### Utilisation d'une variable pour connaître l'état de la connexion
 
-Dans les classes principales, une variable booléenne `activeConnection` a été ajoutée afin de connaitre l'état de la connexion
-entre le serveur et le client. Si la variable est à false la connection n'est plus active, sinon la connection
+Dans les classes principales, une variable booléenne `activeconnexion` a été ajoutée afin de connaitre l'état de la
+connexion
+entre le serveur et le client. Si la variable est à false la connexion n'est plus active, sinon la connexion
 est active et la variable est à true. Utiliser une variable comme ceci permet aux threads de sortir de se terminer sans
 qu'il y ait d'erreur. En effet, le programme principal attend que les threads se terminent avant de supprimer le socket
 de connexion pour éviter les erreurs.
 
 #### Traitement des exceptions
 
-Dans certains cas, une variable d'état de connection ne suffit pas. En effet, lorsque le programme est en attente d'une
+Dans certains cas, une variable d'état de connexion ne suffit pas. En effet, lorsque le programme est en attente d'une
 entrée sur le terminal par exemple, il n'y a pas de vérification de la variable et une exception est renvoyée aprés la
 lecture.
 Nous avons donc étudié les possibilités d'exceptions et traités les différents cas afin que les programmes se comportent
 de la meilleure façon possible :
 
-- Dans le cas d'une fermeture de connection (passage de la variable d'état à false)
+- Dans le cas d'une fermeture de connexion (passage de la variable d'état à false)
 - Lors de la fermeture imprévue d'un client
 - Lors de la fermeture imprévue du serveur
   Le programme peut donc soit s'arrêter aprés la récupération de l'exception, en envoyant les informations nécessaires,
@@ -179,7 +180,7 @@ Choisissez le lien HTTPS (donné également ci-dessous).
 Sur votre IDE :
 Choisissez de créer un projet avec VCS et collez le lien donné ci-dessus.
 
-A présent, suivez les instructions de votre IDE et le projet devrait se cloner correctement.
+À présent, suivez les instructions de votre IDE et le projet devrait se cloner correctement.
 
 
 #### Lancer l'application
@@ -190,9 +191,9 @@ Pour lancer l'application, il est nécessaire de créer une Configuration (gén�
 
 Créez une configuration `ClientConfiguration` qui utilise le fichier `Client` (fr.utc.sr03.clientPackage.Client sur
 l'image ci-dessus)
-et authorisez les instances multiples dans les options.
+et autorisez les instances multiples dans les options.
 À présent, créez de la même façon une configuration `ServerConfiguration` qui utilise le fichier `Server` (
-fr.utc.sr03.clientPackage.Server) et lancez la.
+fr.utc.sr03.clientPackage.Server) et lancez-la.
 Le serveur est ainsi lancé.
 Maintenant, cliquez sur la configuration `ClientConfiguration` et lancez là autant de fois que vous voulez de clients. 
 Par exemple si vous voulez 4 clients, il est nécessaire de lancer 4 fois la configuration `ClientConfiguration`.
@@ -219,7 +220,7 @@ Celui-ci sera connecté après avoir choisi un pseudo.
 
 #### Démarrer la discussion
 
-Aprés la connection, le client peut écrire un message sur le terminal qui sera envoyé à tous les utilisateurs.
+Aprés la connexion, le client peut écrire un message sur le terminal qui sera envoyé à tous les utilisateurs.
 De même, il recevra les messages écrit par les autres clients.
 
 ![](images/ConversationStart.png)
@@ -264,5 +265,10 @@ De plus, les clients et le serveur sont notifiés lorsque cela est nécessaire.
 Nous avons traité au mieux les exceptions en fonction de nos connaissances actuelles, en utilisant les exceptions déjà disponibles en Java. 
 Cependant, pour la suite de notre application, il sera sans doute préférable de créer nos propres exceptions pour une gestion plus spécifique et précise.
 
+### Logs de la console du serveur
 
+Au niveau du terminal du serveur, nous avons décidé de laisser les messages d'informations de connexion et de
+déconnexion afin d'avoir un suivi minimal des actions serveur.
+Il aurait été possible d'être plus précis quant aux informations affichées, voire de créer un fichier de log à chaque
+lancement d'une instance serveur. 
 

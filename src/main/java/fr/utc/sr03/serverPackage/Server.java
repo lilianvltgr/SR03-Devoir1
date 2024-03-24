@@ -3,6 +3,7 @@ package fr.utc.sr03.serverPackage;
 import java.io.IOException;
 import java.net.*;
 import java.io.DataOutputStream;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -76,6 +77,7 @@ public class Server {
      * @throws IOException If an I/O problem occurs while sending the message.
      */
     protected static void sendMessageToClients(String message, String pseudo) throws IOException {
+        String currentTime = java.time.LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")) + " | ";
         for (Map.Entry<String, DataOutputStream> entry : connectedClients.entrySet()) {
             // Getting the entryPseudo (key of the hashtable)
             String entryPseudo = entry.getKey();
@@ -87,7 +89,7 @@ public class Server {
             if (message.equals("a rejoint la conversation.") || message.equals("a quitté la conversation de façon imprévue.") || message.equals("a quitté la conversation.")){
                 if (!entryPseudo.equals(pseudo)) {
                     // Concerned pseudo and situation message are written separately to the server's output stream
-                    output.writeUTF(pseudo);
+                    output.writeUTF(currentTime + pseudo);
                     output.writeUTF(message);
                 }
             }
@@ -99,7 +101,7 @@ public class Server {
                     finalPseudo = "Moi";
                 }
                 // Concerned pseudo and retransmitted message are written separately to the server's output stream
-                output.writeUTF(finalPseudo + ":");
+                output.writeUTF(currentTime + finalPseudo + ":");
                 output.writeUTF(message);
             }
         }
