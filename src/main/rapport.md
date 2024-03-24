@@ -1,7 +1,7 @@
 # Rapport Devoir 1
 
 Voltigeur Lilian
-Chesnay Zoé
+Chesnais Zoé
 
 ## Contexte
 
