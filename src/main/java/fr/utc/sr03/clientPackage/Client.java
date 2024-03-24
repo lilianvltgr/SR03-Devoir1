@@ -6,7 +6,6 @@ import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
 
-
 /**
  * Client class for establishing a connection
  * with the server and launching two communication threads:
@@ -20,6 +19,9 @@ public class Client {
     static volatile boolean activeConnection = true;
 
     public static void main(String[] args) {
+        //threads initialisation
+        ClientMessageSender threadMessageSender = null;
+        ClientMessageReceptor threadMessageReceptor;
         try {
 
             // Create a Scanner object to read input from the standard input (keyboard)
@@ -56,12 +58,12 @@ public class Client {
 
             // Create a new message sender thread and start it.
             // This thread is responsible for sending messages to the server using the communication channel.
-            ClientMessageSender threadMessageSender = new ClientMessageSender(communication, pseudo);
+            threadMessageSender = new ClientMessageSender(communication, pseudo);
             threadMessageSender.start();
 
             // Create a new message receptor thread and start it.
             // This thread is responsible for receiving messages from the server using the communication channel.
-            ClientMessageReceptor threadMessageReceptor = new ClientMessageReceptor(communication);
+            threadMessageReceptor = new ClientMessageReceptor(communication);
             threadMessageReceptor.start();
 
             while (activeConnection) {
@@ -70,17 +72,23 @@ public class Client {
             // Process of disconnection; closes the communication socket after 2 seconds
             System.out.println("Déconnexion en cours");
         } catch (IOException e) {
+
             activeConnection = false;
             System.out.println("Le serveur a un problème, retentez de vous connecter plus tard");
         } finally {
+
             try {
+                //waiting for threads to finish
                 sleep(2000);
                 communication.close();
+
             } catch (Exception ex) {
                 // if the closing does not work the program finishes
             }
-            // We ensure that all the threads and sockets are closed at the end of the program
-            System.exit(0);
+            if (threadMessageSender != null && threadMessageSender.isAlive()) {
+                //If this thread is alive, it means that it is waiting for the client to write on the terminal, so we close it
+                System.exit(0);
+            }
         }
     }
 }
