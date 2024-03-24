@@ -86,7 +86,8 @@ Pour chaque connection client/serveur, trois threads sont mis en place :
   autres clients.
   Le thread est défini dans la classe `ClientMessageReceptor`.
 
-![](\SR03Devoir1.png)
+![](images/Sketch.png)
+
 
 
 ### Méthodes principales
@@ -169,7 +170,7 @@ Pour visualiser le projet sur Github, rendez-vous sur le lien suivant :
 
 Pour ensuite cloner le projet, rendez-vous sur Code > Local > Clone
 
-![Capture d’écran 2024-03-23 à 18.42.17.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2Fxg%2F8fz57x4n1hl8gjmsbfgq2pg80000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_w6IVud%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2018.42.17.png)
+![](images/GitClone.png)
 
 Choisissez le lien HTTPS (donné également ci-dessous).
 
@@ -185,7 +186,7 @@ A présent, suivez les instructions de votre IDE et le projet devrait se cloner 
 
 Pour lancer l'application, il est nécessaire de créer une Configuration (généralement en haut à droite dans votre IDE).
 
-![Capture d’écran 2024-03-23 à 19.08.19.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2Fxg%2F8fz57x4n1hl8gjmsbfgq2pg80000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_QrYJ7X%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2019.08.19.png)
+![](images/AddClientConfiguration.png)
 
 Créez une configuration `ClientConfiguration` qui utilise le fichier `Client` (fr.utc.sr03.clientPackage.Client sur
 l'image ci-dessus)
@@ -206,30 +207,31 @@ de `ClientConfiguration`.
 Afin de démarrer le chat, il faut ainsi lancer la classe `Server` puis lancer la configuration créée normalement précédemment `ClientConfiguration`.
 Il sera demandé sur le terminal du client d'entrer un pseudo. Ensuite, celui-ci sera connecté au fil de discussion.
 
-![Capture d’écran 2024-03-23 à 19.14.14.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2FDesktop%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2019.14.14.png)
+![](images/EntreePseudoClient.png)
+![](images/ConnectedClient.png)
 
 #### Ajouter des utilisateurs
 
 Pour ajouter un utilisateur il suffit de relancer la configuration `ClientConfiguration`. 
 Celui-ci sera connecté après avoir choisi un pseudo.
 
-![Capture d’écran 2024-03-23 à 19.15.00.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2FDesktop%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2019.15.00.png)
+![](images/NewClientConnected.png)
 
 #### Démarrer la discussion
 
 Aprés la connection, le client peut écrire un message sur le terminal qui sera envoyé à tous les utilisateurs.
 De même, il recevra les messages écrit par les autres clients.
 
-![Capture d’écran 2024-03-23 à 19.15.34.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2FDesktop%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2019.15.34.png)
-![Capture d’écran 2024-03-23 à 19.15.53.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2FDesktop%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2019.15.53.png)
+![](images/ConversationStart.png)
+![](images/Conversation.png)
 
 #### Quitter le chat
 
 Pour quitter le chat, il suffit que le client tape "exit". La déconnexion s'effectuera et les autres clients seront
 notifiés.
 
-![Capture d’écran 2024-03-23 à 19.17.08.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2FDesktop%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2019.17.08.png)
-![Capture d’écran 2024-03-24 à 00.11.32.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2FDesktop%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-24%20%C3%A0%2000.11.32.png)
+![](images/ClientExit.png)
+![](images/BroadcastedClientExit.png)
 
 ### Cas particuliers
 
@@ -238,20 +240,20 @@ notifiés.
 Si le client a un problème, les autres utilisateurs seront notifiés et le serveur supprimera le client de sa base de
 données.
 
-![Capture d’écran 2024-03-23 à 19.20.47.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2FDesktop%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2019.20.47.png)
+![](images/AbruptClientExit.png)
 
 #### Connexion échouée
 
 Si un client, tente de se connecter avant que le server ne tourne, un message informant
 que le serveur a un problème sera renvoyé au client et son programme se terminera.
 
-![Capture d’écran 2024-03-23 à 19.33.03.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2Fxg%2F8fz57x4n1hl8gjmsbfgq2pg80000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_UMiYcl%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-23%20%C3%A0%2019.33.03.png)
+![](images/UnreachableServer.png)
 
 #### Serveur interrompu
 
 Si le serveur est interrompu, les clients sont notifiés et sont déconnectés.
 
-![Capture d’écran 2024-03-24 à 00.13.58.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2FDesktop%2FCapture%20d%E2%80%99%C3%A9cran%202024-03-24%20%C3%A0%2000.13.58.png)
+![](images/ServorError.png)
 
 ## Futures Améliorations
 
